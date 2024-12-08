@@ -10,9 +10,9 @@ native
 node_modules
 dist
 .env
+package-lock.json
 dist-ssr
 *.local
-package-lock.json
 
 # Editor directories and files
 .vscode/*
