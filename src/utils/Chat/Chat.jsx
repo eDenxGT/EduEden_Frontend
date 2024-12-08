@@ -80,10 +80,6 @@ export function Chat({ role }) {
 		setMessages((prevMessages) => [...prevMessages, message]);
 	};
 
-	const handleSelectConversation = (conversation) => {
-		setActiveConversation(conversation);
-		// Fetch messages for the selected conversation
-	};
 
 
 	return (
@@ -99,7 +95,6 @@ export function Chat({ role }) {
 			<Sidebar
 				conversations={conversations}
 				activeConversation={activeConversation}
-				onSelectConversation={handleSelectConversation}
 				onCreateNewChat={handleCreateNewChat}
 			/>
 			<div className="flex flex-1 flex-col">
