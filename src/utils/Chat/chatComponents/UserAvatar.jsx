@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function UserAvatar({ user, size = "md" }) {
   const sizeClasses = {
     sm: "h-8 w-8",
-    md: "h-10 w-10",
+    md: "h-11 w-11",
     lg: "h-12 w-12"
   }
 

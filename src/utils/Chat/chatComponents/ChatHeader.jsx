@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react'
 import { Video, MoreVertical, UserCircle, Ban, Flag, Trash2 } from 'lucide-react'
-import { useSelector } from 'react-redux'
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "./UserAvatar"
 import {
@@ -32,12 +32,12 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-export function ChatHeader() {
-  const {
-    chats: conversations,
-    activeChat,
-  } = useSelector((state) => state?.chat)
-  const conversation = conversations.find((conversation) => conversation._id === activeChat)
+export function ChatHeader({conversation, role}) {
+  // const {
+  //   chats: conversations,
+  //   activeChat,
+  // } = useSelector((state) => state?.chat)
+  // const conversation = conversations.find((conversation) => conversation?._id === activeChat?._id)
 
   const [showBlockConfirmation, setShowBlockConfirmation] = useState(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
@@ -45,19 +45,16 @@ export function ChatHeader() {
   const [reportReason, setReportReason] = useState('')
 
   const handleBlock = () => {
-    // Implement block user logic here
     console.log('User blocked')
     setShowBlockConfirmation(false)
   }
 
   const handleDelete = () => {
-    // Implement delete chat logic here
     console.log('Chat deleted')
     setShowDeleteConfirmation(false)
   }
 
   const handleReport = () => {
-    // Implement report user logic here
     console.log('User reported:', reportReason)
     setShowReportDialog(false)
     setReportReason('')

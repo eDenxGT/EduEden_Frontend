@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { studentLogin } from "../../../store/slices/studentSlice";
 import storeAccessToken from "../../../api/storeAccessToken";
+import socket from "@/Services/Socket";
 
 const SignUp = () => {
 	const [formData, setFormData] = useState({
@@ -169,7 +170,7 @@ const SignUp = () => {
 
 	const onGoogleSignUpSuccess = async (data) => {
 		dispatch(
-			studentLogin({ studentData: data.userData, token: data.token })
+			studentLogin({ studentData: data.userData })
 		);
 		const accessToken = data?.accessToken;
 		if (!accessToken) {
@@ -177,6 +178,10 @@ const SignUp = () => {
 		}
 		toast.success(data?.message);
 		storeAccessToken("student", accessToken, 13);
+		socket.disconnect();
+		socket.auth.role = "student";
+		socket.auth.token = accessToken;
+        socket.connect();
 		// toast.success("Google sign-in was successful.");
 		setTimeout(() => {
 			navigate("/student/home");

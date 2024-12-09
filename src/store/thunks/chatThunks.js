@@ -3,9 +3,11 @@ import { axiosInstance } from "../../api/axiosConfig";
 
 const fetchMessagesByChatId = createAsyncThunk(
 	"chat/fetchMessagesByChatId",
-	async (chatId, { rejectWithValue }) => {
+	async (chat_id, { rejectWithValue }) => {
+		console.log(chat_id)
 		try {
-			const response = await axiosInstance.get(`/chats/get-messages/${chatId}`);
+			const response = await axiosInstance.get(`/chats/get-messages/${chat_id}`);
+			console.log(response); 
 			return response.data;
 		} catch (error) {
 			return rejectWithValue(error.response?.data || "An error occurred");
@@ -37,15 +39,25 @@ const getStudentsByTutorId = createAsyncThunk(
   }
 )
 
-
+const getTutorsByStudentId = createAsyncThunk(
+  "chat/getTutorsByStudentId",
+  async (student_id, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/chats/get-tutors/${student_id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+)
 
 const createNewChat = createAsyncThunk(
 	"chat/createNewChat",
-	async (newChatDetails, { rejectWithValue }) => {
+	async ({newChatDetails, role}, { rejectWithValue }) => {
 		try {
 			const response = await axiosInstance.post(
 				`/chats/create-chat`,
-				newChatDetails
+				{newChatDetails, role}
 			);
 			console.log(response);
 			return response.data;
@@ -56,4 +68,4 @@ const createNewChat = createAsyncThunk(
 );
 
 
-export { fetchMessagesByChatId, fetchChatsByUserId, createNewChat, getStudentsByTutorId };
+export { fetchMessagesByChatId, fetchChatsByUserId, createNewChat, getStudentsByTutorId, getTutorsByStudentId };

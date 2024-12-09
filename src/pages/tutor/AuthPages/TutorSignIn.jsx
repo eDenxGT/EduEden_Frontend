@@ -14,6 +14,8 @@ import { useDispatch } from "react-redux";
 import { tutorLogin } from "../../../store/slices/tutorSlice";
 import OtpVerificationModal from "../../../utils/Modals/OtpVerificationModal";
 import storeAccessToken from "../../../api/storeAccessToken";
+import socket from "@/Services/Socket";
+
 
 const TutorSignIn = () => {
 	const [formData, setFormData] = useState({
@@ -84,6 +86,10 @@ const TutorSignIn = () => {
 				dispatch(tutorLogin(response.data));
 				localStorage.removeItem("isOtpModalOpen");
 				localStorage.removeItem("formEmail");
+				socket.disconnect();
+				socket.auth.role = "tutor";
+				socket.auth.token = accessToken;
+				socket.connect();
 				setTimeout(() => {
 					navigate("/tutor/dashboard");
 				}, 2000);
@@ -167,6 +173,10 @@ const TutorSignIn = () => {
 		}
 		toast.success(data?.message);
 		storeAccessToken("tutor", accessToken, 1);
+		socket.disconnect();
+		socket.auth.role = "tutor";
+		socket.auth.token = accessToken;
+		socket.connect();
 		setTimeout(() => {
 			navigate("/tutor/dashboard");
 		}, 1500);

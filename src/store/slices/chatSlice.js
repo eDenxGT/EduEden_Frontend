@@ -4,6 +4,7 @@ import {
 	fetchMessagesByChatId,
 	getStudentsByTutorId,
 	createNewChat,
+	getTutorsByStudentId
 } from "../thunks/chatThunks";
 
 const chatSlice = createSlice({
@@ -12,7 +13,7 @@ const chatSlice = createSlice({
 		chats: [],
 		activeChat: null,
 		messages: [],
-		students: [],
+		availableUsersToChat: [],
 		status: "idle",
 		error: null,
 	},
@@ -37,23 +38,20 @@ const chatSlice = createSlice({
 				state.status = "failed";
 				state.error = action.payload;
 			})
-			.addCase(fetchMessagesByChatId.pending, (state) => {
-				state.status = "loading";
-			})
 			.addCase(fetchMessagesByChatId.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				state.messages = action.payload.messages;
-			})
-			.addCase(fetchMessagesByChatId.rejected, (state, action) => {
-				state.status = "failed";
-				state.error = action.payload;
+				state.messages = action.payload;
+				console.log(state.messages);
 			})
 			.addCase(createNewChat.fulfilled, (state, action) => {
-				state.activeChat = action.payload._id;
+				state.activeChat = action.payload;
 			})
 			.addCase(getStudentsByTutorId.fulfilled, (state, action) => {
-				state.students = action.payload;
-			});
+				state.availableUsersToChat = action.payload;
+			})
+			.addCase(getTutorsByStudentId.fulfilled, (state, action) => {
+				state.availableUsersToChat = action.payload;
+			})
 	},
 });
 

@@ -20,40 +20,46 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDispatch, useSelector } from "react-redux";
-import { getStudentsByTutorId } from "@/store/thunks/chatThunks";
+import { getStudentsByTutorId, getTutorsByStudentId } from "@/store/thunks/chatThunks";
 import { setActiveChat } from "@/store/slices/chatSlice";
 
-export function Sidebar({ onCreateNewChat }) {
+export function Sidebar({
+  onCreateNewChat,
+  onSelectConversation,
+  conversations,
+  activeConversation,
+  role,
+  senderData
+}) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  // const [value, setValue] = useState("");
   const dispatch = useDispatch();
-  const { tutorData, toggleTheme: isDarkMode } = useSelector(
-    (state) => state.tutor
-  );
   const {
-    students,
-    chats: conversations,
-    activeChat,
+    availableUsersToChat,
   } = useSelector((state) => state?.chat);
 
   const fetchUsers = useCallback(async () => {
     try {
       console.log("Fetching Students");
-      await dispatch(getStudentsByTutorId(tutorData.user_id)).unwrap();
+      if(role === "student") {
+        await dispatch(getTutorsByStudentId(senderData.user_id)).unwrap();
+      } else if(role === "tutor") {
+        await dispatch(getStudentsByTutorId(senderData.user_id)).unwrap();
+      }
     } catch (error) {
       console.error("Failed to fetch students:", error);
     }
-  }, [dispatch, tutorData.user_id]);
+  }, [dispatch, senderData?.user_id]);
+
   useEffect(() => {
-    if (tutorData?.user_id) {
+    if (senderData?.user_id) {
       fetchUsers();
     }
-  }, [fetchUsers, tutorData?.user_id]);
+  }, [fetchUsers, senderData?.user_id]);
 
-  const onSelectConversation = (conversation) => {
-    if (activeChat === conversation?._id) return;
-
-    dispatch(setActiveChat(conversation?._id));
+  const onUserSelectConversation = (conversation) => {
+    if (activeConversation?._id === conversation?._id) return;
+    onSelectConversation(conversation);
   };
 
   const onSelectNewUserChat = (user_id) => {
@@ -87,11 +93,12 @@ export function Sidebar({ onCreateNewChat }) {
                 <CommandList>
                   <CommandEmpty>No user found.</CommandEmpty>
                   <CommandGroup>
-                    {students.map((user) => (
+                    {availableUsersToChat?.map((user) => (
                       <CommandItem
                         key={user?.user_id}
                         value={user?.full_name}
                         onSelect={() => {
+                          console.log("Selected user:", user);
                           onSelectNewUserChat(user?.user_id);
                         }}
                       >
@@ -113,14 +120,14 @@ export function Sidebar({ onCreateNewChat }) {
           {conversations?.map((conversation, index) => (
             <button
               key={conversation._id || index}
-              onClick={() => onSelectConversation(conversation)}
+              onClick={() => onUserSelectConversation(conversation)}
               className={`flex items-start gap-2 w-full p-2 rounded-lg transition-colors ${
-                activeChat === conversation?._id
+                activeConversation?._id === conversation?._id
                   ? "bg-orange-100"
                   : "hover:bg-gray-50"
               }`}
             >
-              <UserAvatar user={conversation?.userDetails?.[0]} size="sm" />
+              <UserAvatar user={conversation?.userDetails?.[0]} size="m" />
               <div className="flex-1 text-left">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-sm">

@@ -14,303 +14,300 @@ import GoogleAuthButton from "../../../utils/GoogleAuth/GoogleAuthButton";
 import { useDispatch } from "react-redux";
 import { studentLogin } from "../../../store/slices/studentSlice";
 import storeAccessToken from "../../../api/storeAccessToken";
+import socket from "@/Services/Socket";
 
 const SignIn = () => {
-	const [formData, setFormData] = useState({
-		email: "",
-		password: "",
-		remember: false,
-	});
-	const [errors, setErrors] = useState({});
-	const [showPassword, setShowPassword] = useState(false);
-	const [otpModalOpen, setOtpModalOpen] = useState(false);
-	const [isFormValid, setIsFormValid] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-	const [isLoadingOtp, setIsLoadingOtp] = useState(false);
-	const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    remember: false,
+  });
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingOtp, setIsLoadingOtp] = useState(false);
+  const navigate = useNavigate();
 
-	const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-	const handleChange = (e) => {
-		const { name, value, type, checked } = e.target;
-		setFormData({
-			...formData,
-			[name]: type === "checkbox" ? checked : value,
-		});
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
 
-		let error = "";
-		if (name === "email" && value.length < 3) {
-			error = "Enter username or email";
-		} else if (name === "password" && value.length < 6) {
-			error = "Password must be at least 6 characters";
-		}
+    let error = "";
+    if (name === "email" && value.length < 3) {
+      error = "Enter username or email";
+    } else if (name === "password" && value.length < 6) {
+      error = "Password must be at least 6 characters";
+    }
 
-		setErrors({ ...errors, [name]: error });
-		setIsFormValid(
-			Object.values({ ...errors, [name]: error }).every((err) => !err)
-		);
-	};
-	useEffect(() => {
-		const savedEmail = localStorage.getItem("formEmail");
-		const savedOtpModalState = localStorage.getItem("isOtpModalOpen");
+    setErrors({ ...errors, [name]: error });
+    setIsFormValid(
+      Object.values({ ...errors, [name]: error }).every((err) => !err)
+    );
+  };
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("formEmail");
+    const savedOtpModalState = localStorage.getItem("isOtpModalOpen");
 
-		if (savedEmail) {
-			setFormData({ email: localStorage.getItem("formEmail") });
-		}
-		if (savedOtpModalState === "true") {
-			setOtpModalOpen(true);
-		}
-	}, []);
+    if (savedEmail) {
+      setFormData({ email: localStorage.getItem("formEmail") });
+    }
+    if (savedOtpModalState === "true") {
+      setOtpModalOpen(true);
+    }
+  }, []);
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		setIsLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-		if (!isFormValid) return;
+    if (!isFormValid) return;
 
-		try {
-			const response = await axiosInstance.post("/auth/signin", formData);
-			if (response?.data?.success === true) {
-				const accessToken = response?.data?.accessToken;
-				if (!accessToken) {
-					throw new Error("Access token not provided in response.");
-				}
-				toast.success(response?.data?.message);
-				storeAccessToken("student", accessToken, 13);
-				const data = response?.data;
-				dispatch(studentLogin(data));
-				localStorage.removeItem("isOtpModalOpen");
-				localStorage.removeItem("formEmail");
-				setTimeout(() => {
-					navigate("/student/home");
-				}, 1500);
-			}
-		} catch (error) {
-			console.error("SignIn Submit Error:", error);
-			const errorMessage =
-				error?.response?.data?.message ||
-				"An error occurred during sign-in.";
-			toast.error(errorMessage);
+    try {
+      const response = await axiosInstance.post("/auth/signin", formData);
+      if (response?.data?.success === true) {
+        const accessToken = response?.data?.accessToken;
+        if (!accessToken) {
+          throw new Error("Access token not provided in response.");
+        }
+        toast.success(response?.data?.message);
+        storeAccessToken("student", accessToken, 13);
+        const data = response?.data;
+        dispatch(studentLogin(data));
+        localStorage.removeItem("isOtpModalOpen");
+        localStorage.removeItem("formEmail");
+		socket.disconnect();
+		socket.auth.role = "student";
+		socket.auth.token = accessToken;
+		socket.connect();
+        setTimeout(() => {
+          navigate("/student/home");
+        }, 1500);
+      }
+    } catch (error) {
+      console.error("SignIn Submit Error:", error);
+      const errorMessage =
+        error?.response?.data?.message || "An error occurred during sign-in.";
+      toast.error(errorMessage);
 
-			if (error?.response?.data?.not_verified) {
-				resendOtp();
-			}
-		} finally {
-			setIsLoading(false);
-		}
-	};
+      if (error?.response?.data?.not_verified) {
+        resendOtp();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-	const resendOtp = async () => {
-		try {
-			const response = await axiosInstance.post("auth/resend-otp", {
-				email: formData.email,
-				role: "student",
-			});
-			if (response.status === 200) {
-				setOtpModalOpen(true);
-				localStorage.setItem("isOtpModalOpen", true);
-				localStorage.setItem("formEmail", formData.email);
-				setTimeout(() => {
-					toast.success(response?.data?.message);
-				}, 2000);
-			}
-		} catch (error) {
-			toast.error(error?.response?.data?.message);
-			console.error("Failed to resend OTP:", error);
-		}
-	};
+  const resendOtp = async () => {
+    try {
+      const response = await axiosInstance.post("auth/resend-otp", {
+        email: formData.email,
+        role: "student",
+      });
+      if (response.status === 200) {
+        setOtpModalOpen(true);
+        localStorage.setItem("isOtpModalOpen", true);
+        localStorage.setItem("formEmail", formData.email);
+        setTimeout(() => {
+          toast.success(response?.data?.message);
+        }, 2000);
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+      console.error("Failed to resend OTP:", error);
+    }
+  };
 
-	const handleOtpVerify = async (otpString) => {
-		try {
-			setIsLoadingOtp(true);
+  const handleOtpVerify = async (otpString) => {
+    try {
+      setIsLoadingOtp(true);
 
-			const response = await axiosInstance.post("/auth/verify-otp", {
-				email: formData.email,
-				otp: otpString,
-				role: "student",
-			});
+      const response = await axiosInstance.post("/auth/verify-otp", {
+        email: formData.email,
+        otp: otpString,
+        role: "student",
+      });
 
-			if (response.status === 200) {
-				toast.success(response?.data?.message);
-				localStorage.removeItem("isOtpModalOpen");
-				localStorage.removeItem("formEmail");
+      if (response.status === 200) {
+        toast.success(response?.data?.message);
+        localStorage.removeItem("isOtpModalOpen");
+        localStorage.removeItem("formEmail");
 
-				dispatch(studentLogin(response?.data));
-				setOtpModalOpen(false);
-				setTimeout(() => {
-					navigate("/student/home");
-				}, 2000);
-			}
-		} catch (error) {
-			toast.error(error?.response?.data?.message);
-			console.log("Otp verify error :", error);
-		} finally {
-			setIsLoadingOtp(false);
-		}
-	};
+        dispatch(studentLogin(response?.data));
+        setOtpModalOpen(false);
+        setTimeout(() => {
+          navigate("/student/home");
+        }, 2000);
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+      console.log("Otp verify error :", error);
+    } finally {
+      setIsLoadingOtp(false);
+    }
+  };
 
-	const handleOtpModalClose = () => {
-		setOtpModalOpen(false);
-		localStorage.removeItem("isOtpModalOpen");
-		localStorage.removeItem("formEmail");
-	};
+  const handleOtpModalClose = () => {
+    setOtpModalOpen(false);
+    localStorage.removeItem("isOtpModalOpen");
+    localStorage.removeItem("formEmail");
+  };
 
-	const onGoogleSignInSuccess = async (data) => {
-		dispatch(
-			studentLogin({ studentData: data.userData, token: data.token })
-		);
-		// toast.success("Google sign-in was successful.");
-		const accessToken = data?.accessToken;
-				if (!accessToken) {
-					throw new Error("Access token not provided in response.");
-				}
-				toast.success(data?.message);
-				storeAccessToken("student", accessToken, 13);
-		setTimeout(() => {
-			navigate("/student/home");
-		}, 1500);
-	};
+  const onGoogleSignInSuccess = async (data) => {
+    dispatch(studentLogin({ studentData: data.userData, token: data.token }));
+    // toast.success("Google sign-in was successful.");
+    const accessToken = data?.accessToken;
+    if (!accessToken) {
+      throw new Error("Access token not provided in response.");
+    }
+    toast.success(data?.message);
+    storeAccessToken("student", accessToken, 13);
+	socket.disconnect();
+	socket.auth.role = "student";
+	socket.auth.token = accessToken;
+	socket.connect();
+    setTimeout(() => {
+      navigate("/student/home");
+    }, 1500);
+  };
 
-	const toSignUp = () => {
-		navigate("/student/signup");
-	};
+  const toSignUp = () => {
+    navigate("/student/signup");
+  };
 
-	return (
-		<>
-			<div className="flex justify-around items-center p-4 border-b border-gray-200">
-				<div className="flex items-center">
-					<PiGraduationCap className="h-6 w-6 text-[#ff5722]" />
-					<span className="ml-2 text-xl font-semibold">
-						<span className="text-gray-900">Edu</span>
-						<span className="text-[#ff5722]">Eden</span>
-					</span>
-				</div>
-				<div className="text-sm">
-					Don&apos;t have an account?
-					<button
-						onClick={toSignUp}
-						className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 ml-4 rounded">
-						Create Account
-					</button>
-				</div>
-			</div>
+  return (
+    <>
+      <div className="flex justify-around items-center p-4 border-b border-gray-200">
+        <div className="flex items-center">
+          <PiGraduationCap className="h-6 w-6 text-[#ff5722]" />
+          <span className="ml-2 text-xl font-semibold">
+            <span className="text-gray-900">Edu</span>
+            <span className="text-[#ff5722]">Eden</span>
+          </span>
+        </div>
+        <div className="text-sm">
+          Don&apos;t have an account?
+          <button
+            onClick={toSignUp}
+            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 ml-4 rounded"
+          >
+            Create Account
+          </button>
+        </div>
+      </div>
 
-			<div className="min-h-screen flex">
-				<div className="hidden lg:flex lg:w-1/2 bg-[#ebebff] items-center justify-center">
-					<img
-						src={BoyPcImage}
-						alt="Illustration"
-						className="max-w-[28rem]"
-					/>
-				</div>
+      <div className="min-h-screen flex">
+        <div className="hidden lg:flex lg:w-1/2 bg-[#ebebff] items-center justify-center">
+          <img src={BoyPcImage} alt="Illustration" className="max-w-[28rem]" />
+        </div>
 
-				<div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
-					<div className="max-w-[28rem] w-full mx-auto">
-						<h1 className="text-2xl font-bold text-gray-900 mb-3">
-							Sign in to your account
-						</h1>
+        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
+          <div className="max-w-[28rem] w-full mx-auto">
+            <h1 className="text-2xl font-bold text-gray-900 mb-3">
+              Sign in to your account
+            </h1>
 
-						<form
-							className="flex flex-col gap-2.5"
-							onSubmit={handleSubmit}>
-							<div>
-								<div className="mb-7">
-									<GoogleAuthButton
-										onSuccessRedirect={(data) =>
-											onGoogleSignInSuccess(data)
-										}
-										role={"student"}
-										// isDarkMode={isDarkMode}
-									/>
-								</div>
-								<div className="flex items-center justify-center text-base font-semibold text-gray-600">
-									<div className="flex-grow border-t border-gray-300"></div>
-									<span className="px-2">OR</span>
-									<div className="flex-grow border-t border-gray-300"></div>
-								</div>
-							</div>
-							<div className="relative">
-								<InputField
-									label="Email"
-									placeholder="Username or email address..."
-									name="email"
-									onChange={handleChange}
-								/>
-								{errors.email && (
-									<span className="text-xs text-red-600 absolute -bottom-4 left-">
-										{errors.email}
-									</span>
-								)}
-							</div>
+            <form className="flex flex-col gap-2.5" onSubmit={handleSubmit}>
+              <div>
+                <div className="mb-7">
+                  <GoogleAuthButton
+                    onSuccessRedirect={(data) => onGoogleSignInSuccess(data)}
+                    role={"student"}
+                    // isDarkMode={isDarkMode}
+                  />
+                </div>
+                <div className="flex items-center justify-center text-base font-semibold text-gray-600">
+                  <div className="flex-grow border-t border-gray-300"></div>
+                  <span className="px-2">OR</span>
+                  <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+              </div>
+              <div className="relative">
+                <InputField
+                  label="Email"
+                  placeholder="Username or email address..."
+                  name="email"
+                  onChange={handleChange}
+                />
+                {errors.email && (
+                  <span className="text-xs text-red-600 absolute -bottom-4 left-">
+                    {errors.email}
+                  </span>
+                )}
+              </div>
 
-							<div className="relative">
-								<InputField
-									onChange={handleChange}
-									label="Password"
-									placeholder="Password"
-									name="password"
-									showPassword={showPassword}
-									setShowPassword={() =>
-										setShowPassword(!showPassword)
-									}
-								/>
-								{errors.password && (
-									<span className="text-xs text-red-600 absolute -bottom-4 left-0">
-										{errors.password}
-									</span>
-								)}
-							</div>
-							<div>
-								<div className="flex items-center justify-between mt-4">
-									<label className="flex items-center text-gray-600">
-										<input
-											type="checkbox"
-											className="h-4 w-4 text-[#ff5722] border-gray-300 focus:ring-[#ff5722]"
-											name="remember"
-											checked={formData.remember}
-											onChange={handleChange}
-										/>
-										<span className="ml-2 text-xs">
-											Remember me
-										</span>
-									</label>
-									<Link
-										to="/forgot-password?role=student"
-										className="ml-2 hover:underline-offset-auto hover:underline text-[#ff5722] text-xs">
-										<span>Forgot Password?</span>
-									</Link>
-								</div>
+              <div className="relative">
+                <InputField
+                  onChange={handleChange}
+                  label="Password"
+                  placeholder="Password"
+                  name="password"
+                  showPassword={showPassword}
+                  setShowPassword={() => setShowPassword(!showPassword)}
+                />
+                {errors.password && (
+                  <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    {errors.password}
+                  </span>
+                )}
+              </div>
+              <div>
+                <div className="flex items-center justify-between mt-4">
+                  <label className="flex items-center text-gray-600">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 text-[#ff5722] border-gray-300 focus:ring-[#ff5722]"
+                      name="remember"
+                      checked={formData.remember}
+                      onChange={handleChange}
+                    />
+                    <span className="ml-2 text-xs">Remember me</span>
+                  </label>
+                  <Link
+                    to="/forgot-password?role=student"
+                    className="ml-2 hover:underline-offset-auto hover:underline text-[#ff5722] text-xs"
+                  >
+                    <span>Forgot Password?</span>
+                  </Link>
+                </div>
 
-								<Button
-									type="submit"
-									text={isLoading ? "" : "Sign In"}
-									className="flex items-center justify-center gap-2 shadow-md mt-2"
-									disabled={
-										!isFormValid ||
-										isLoading ||
-										!formData.password ||
-										!formData.email
-									}>
-									{isLoading ? (
-										<Spinner size="small" />
-									) : (
-										<FiArrowRight className="w-4 h-4" />
-									)}
-								</Button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<OtpVerificationModal
-				isOpen={otpModalOpen}
-				onClose={handleOtpModalClose}
-				onVerify={handleOtpVerify}
-				isLoading={isLoadingOtp}
-				onResendOtp={resendOtp}
-			/>
-		</>
-	);
+                <Button
+                  type="submit"
+                  text={isLoading ? "" : "Sign In"}
+                  className="flex items-center justify-center gap-2 shadow-md mt-2"
+                  disabled={
+                    !isFormValid ||
+                    isLoading ||
+                    !formData.password ||
+                    !formData.email
+                  }
+                >
+                  {isLoading ? (
+                    <Spinner size="small" />
+                  ) : (
+                    <FiArrowRight className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <OtpVerificationModal
+        isOpen={otpModalOpen}
+        onClose={handleOtpModalClose}
+        onVerify={handleOtpVerify}
+        isLoading={isLoadingOtp}
+        onResendOtp={resendOtp}
+      />
+    </>
+  );
 };
 
 export default SignIn;
