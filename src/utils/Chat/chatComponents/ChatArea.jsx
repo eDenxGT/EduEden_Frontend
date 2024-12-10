@@ -87,7 +87,7 @@ export function ChatArea({
                     : conversation?.student_id)
                 }
                 conversation={conversation}
-                receiver={conversation?.userDetails?.[0]}
+                receiver={conversation?.userDetails?.[0] || conversation?.userDetails}
                 sender={{ ...senderDetails }}
               />
             ))}

@@ -9,7 +9,7 @@ import {
   fetchChatsByUserId,
   fetchMessagesByChatId,
 } from "@/store/thunks/chatThunks";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { setActiveChat } from "@/store/slices/chatSlice";
 import { v4 as uuidv4 } from "uuid";
 import { axiosInstance } from "@/api/axiosConfig";
@@ -48,15 +48,12 @@ export function Chat({ role }) {
       console.log("Current Ref Value:", activeConversationRef.current);
       if (chatData?._id !== activeConversationRef.current?._id) {
         console.log("Not in chat");
-        const messageSenderId =
-          role === "student" ? chatData?.tutor_id : chatData?.student_id;
-        const senderName = availableUsersToChat?.find(
-          (user) => user?.user_id === messageSenderId
-        ).full_name;
-		toast({
-			title: "New Message",
-			description: `You have a new message from ${senderName}`,
-		  });        fetchChats();
+        toast({
+          title: `Message from ${role === "student" ? "Tutor" : "Student"}`,
+          description: message?.message_text || "New Message",
+          duration: 3000
+        });
+        fetchChats();
       } else {
         console.log("Already in chat");
         handleReadMessage(chatData, role);
