@@ -1,5 +1,4 @@
-/* eslint-disable react/prop-types */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import socket from "@/Services/Socket.js";
 import { Sidebar } from "./chatComponents/Sidebar";
 import { ChatHeader } from "./chatComponents/ChatHeader";
@@ -13,11 +12,12 @@ import {
 import { toast } from "sonner";
 import { setActiveChat } from "@/store/slices/chatSlice";
 import { v4 as uuidv4 } from "uuid";
+import { axiosInstance } from "@/api/axiosConfig";
 
 export function Chat({ role }) {
   const dispatch = useDispatch();
 
-  //* ============== Redux State ============= *//
+  //* Redux State
   const {
     chats,
     activeChat,
@@ -25,25 +25,39 @@ export function Chat({ role }) {
   } = useSelector((state) => state.chat);
   const { tutorData } = useSelector((state) => state.tutor);
   const { studentData } = useSelector((state) => state.student);
+  const { availableUsersToChat } = useSelector((state) => state?.chat);
 
-  console.log(chatMessages);
-
-  //* ============== Computed Data ============= *//
+  //* Computed Data
   const senderDetails = role === "student" ? studentData : tutorData;
   const sender_id = senderDetails?.user_id;
 
-  //* ============== Local State ============= *//
+  //* Local State
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(
     activeChat || null
   );
-
   const [messages, setMessages] = useState(chatMessages || []);
 
-  //* ============== Socket Setup ============= *//
+  //* Ref for Active Conversation
+  const activeConversationRef = useRef(activeConversation);
+
+  //* Update Ref Whenever Active Conversation Changes
   useEffect(() => {
-    socket.on("receive-message", (message) => {
-      console.log(message);
+    activeConversationRef.current = activeConversation;
+  }, [activeConversation]);
+
+  //* Socket Setup
+  useEffect(() => {
+    socket.on("receive-message", ({ chatData, ...message }) => {
+      console.log("Current Ref Value:", activeConversationRef.current);
+      if (chatData?._id !== activeConversationRef.current?._id) {
+        console.log("Not in chat");
+        toast.success(`You have a new message from ${chatData?.sender_name}`);
+        fetchChats();
+      } else {
+        console.log("Already in chat");
+        handleReadMessage(chatData, role);
+      }
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -52,7 +66,17 @@ export function Chat({ role }) {
     };
   }, []);
 
-  //* ============== Fetch Chats ============= *//
+  useEffect(() => {
+	socket.on("users-update", (data) => {
+	  console.log("User disconnected:", data);
+		fetchChats();
+	});
+	return () => {
+	  socket.off("users-update");
+	};
+  }, []);
+
+  //* Fetch Chats
   const fetchChats = useCallback(async () => {
     if (!sender_id) return;
 
@@ -91,7 +115,7 @@ export function Chat({ role }) {
     }
   }, [activeConversation, fetchMessages]);
 
-  //* ============== Create New Chat ============= *//
+  //* Create New Chat
   const handleCreateNewChat = async (targetUserId) => {
     if (!sender_id || !targetUserId) return;
 
@@ -99,20 +123,20 @@ export function Chat({ role }) {
       student_id: role === "student" ? sender_id : targetUserId,
       tutor_id: role === "tutor" ? sender_id : targetUserId,
     };
-
     try {
       const newChat = await dispatch(
         createNewChat({ newChatDetails, role })
       ).unwrap();
       setActiveConversation(newChat);
-
+      dispatch(setActiveChat(newChat));
+      console.log(newChat);
       await fetchChats();
     } catch (error) {
       console.error("Error creating new chat:", error);
     }
   };
 
-  //* ============== Handle Send Message ============= *//
+  //* Send Message
   const handleSendMessage = (text) => {
     if (!activeConversation) {
       toast.error("No active conversation selected.");
@@ -127,6 +151,7 @@ export function Chat({ role }) {
     const message = {
       message_id: uuidv4(),
       sender_id,
+      chat_id: activeConversation._id,
       receiver_id,
       message_text: text,
       time_stamp: new Date().toISOString(),
@@ -135,12 +160,32 @@ export function Chat({ role }) {
     console.log("Sending message:", message);
 
     socket.emit("send-message", message);
-
+    fetchChats();
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-  //* ============== Handle Select Conversation ============= *//
+  //* Read Message
+  const handleReadMessage = async (currentConversation, userRole) => {
+    try {
+      await axiosInstance.put(`/chats/read-message`, {
+        chat_id: currentConversation._id,
+        user_role: userRole,
+      });
+      fetchChats();
+    } catch (error) {
+      console.error("Error reading message:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeConversation && role) {
+      handleReadMessage(activeConversation, role);
+    }
+  }, [activeConversation, role]);
+
+  //* Select Conversation
   const handleSelectConversation = (conversation) => {
+    console.log("conversation which is selected", conversation);
     setActiveConversation(conversation);
     setMessages(conversation?.messages || []);
     dispatch(setActiveChat(conversation));
@@ -148,7 +193,6 @@ export function Chat({ role }) {
 
   return (
     <div className="flex h-[calc(100vh-4rem)] bg-white">
-      {/* Sidebar Component */}
       <Sidebar
         conversations={conversations}
         activeConversation={activeConversation}
@@ -158,9 +202,8 @@ export function Chat({ role }) {
         senderData={senderDetails}
       />
 
-      {/* Main Chat Area */}
       <div className="flex flex-1 flex-col">
-        <ChatHeader role={role} conversation={activeConversation} />
+        <ChatHeader role={role} conversation={activeConversationRef.current} />
         <ChatArea
           conversation={activeConversation}
           role={role}

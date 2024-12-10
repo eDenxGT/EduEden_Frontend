@@ -16,6 +16,7 @@ import { PiGraduationCap } from "react-icons/pi";
 import { FiArrowLeft } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import socket from "@/Services/Socket";
 
 //* ====== Imports of Custom Components ====== *//
 import Button from "../CommonComponents/Button";
@@ -230,7 +231,7 @@ const Header = ({ role }) => {
 			let accessToken = "";
 			let redirectPath = "";
 			let logoutAction = null;
-
+			socket.disconnect();
 			if (role === "student") {
 				accessToken = "student_access_token";
 				redirectPath = "/student/signin";

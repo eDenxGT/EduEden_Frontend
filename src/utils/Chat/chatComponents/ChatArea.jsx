@@ -1,15 +1,24 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { Send, Smile } from "lucide-react";
+import { Send, Smile } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
+import EmojiPicker from 'emoji-picker-react';
 
-export function ChatArea({ messages, onSendMessage, conversation, role, senderDetails }) {
+export function ChatArea({
+  messages,
+  onSendMessage,
+  conversation,
+  role,
+  senderDetails,
+}) {
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
   useEffect(() => {
     if (scrollRef.current) {
       const scrollElement = scrollRef.current.querySelector(
@@ -21,7 +30,9 @@ export function ChatArea({ messages, onSendMessage, conversation, role, senderDe
     }
   }, [messages]);
 
-  console.log(messages);
+  const filteredMessages = messages?.filter(
+    (message) => message.chat_id === conversation?._id
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,12 +47,28 @@ export function ChatArea({ messages, onSendMessage, conversation, role, senderDe
     setInputValue(e.target.value);
   };
 
-  const isButtonDisabled = inputValue.trim() === "";
+  const handleEmojiClick = (emojiObject) => {
+    setInputValue(prevInput => prevInput + emojiObject.emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const toggleEmojiPicker = () => {
+    setShowEmojiPicker(!showEmojiPicker);
+  };
+
+  const isButtonDisabled =
+    inputValue.trim() === "" ||
+    inputValue.length > 100 ||
+    conversation === null;
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
       <ScrollArea ref={scrollRef} className="flex-1 p-4">
-        {messages?.length === 0 ? (
+        {conversation === null ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-400 text-center">Select a conversation</p>
+          </div>
+        ) : filteredMessages?.length === 0 ? (
           <div className="flex items-center justify-center h-full ">
             <p className="text-gray-400 text-center">
               No messages yet. Start the conversation!
@@ -49,7 +76,7 @@ export function ChatArea({ messages, onSendMessage, conversation, role, senderDe
           </div>
         ) : (
           <div className="space-y-4 overflow-hidden">
-            {messages?.map((message) => (
+            {filteredMessages?.map((message) => (
               <MessageBubble
                 key={message.message_id}
                 message={message}
@@ -59,8 +86,9 @@ export function ChatArea({ messages, onSendMessage, conversation, role, senderDe
                     ? conversation?.tutor_id
                     : conversation?.student_id)
                 }
+                conversation={conversation}
                 receiver={conversation?.userDetails?.[0]}
-                sender={{...senderDetails}}
+                sender={{ ...senderDetails }}
               />
             ))}
           </div>
@@ -68,15 +96,23 @@ export function ChatArea({ messages, onSendMessage, conversation, role, senderDe
       </ScrollArea>
       <div className="border-t bg-white p-3">
         <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <Smile className="h-5 w-5" />
-            <span className="sr-only">Add emoji</span>
-          </Button>
+          <div className="relative">
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="text-gray-500 hover:text-gray-700"
+              onClick={toggleEmojiPicker}
+            >
+              <Smile className="h-5 w-5" />
+              <span className="sr-only">Add emoji</span>
+            </Button>
+            {showEmojiPicker && (
+              <div className="absolute bottom-full mb-2">
+                <EmojiPicker  onEmojiClick={handleEmojiClick} />
+              </div>
+            )}
+          </div>
           <Input
             ref={inputRef}
             value={inputValue}
@@ -98,3 +134,4 @@ export function ChatArea({ messages, onSendMessage, conversation, role, senderDe
     </div>
   );
 }
+

@@ -38,14 +38,15 @@ socket.on("connect", () => {
 
 socket.on("connect_error", (error) => {
   console.error("Socket connection error:", error.message);
-  if (error.message === "Invalid token. Please login again.") {
-    Cookies.remove("tutor_access_token");
-    Cookies.remove("tutorRefreshToken");
-    Cookies.remove("studentRefreshToken");
-    Cookies.remove("student_access_token");
-    window.location.href =
-      role === "tutor" ? "/tutor/signin" : "/student/signin";
-  }
+  // if (error.message === "Invalid token. Please login again.") {
+  //   Cookies.remove("tutor_access_token");
+  //   Cookies.remove("tutorRefreshToken");
+  //   Cookies.remove("studentRefreshToken");
+  //   Cookies.remove("student_access_token");
+  //   window.location.href =
+  //     role === "tutor" ? "/tutor/signin" : "/student/signin";
+  // }
+  console.log("Connection error", error)
 });
 
 socket.on("token-expired", async () => {
@@ -78,12 +79,13 @@ socket.on("token-expired", async () => {
   } catch (error) {
     console.error("Failed to refresh token (in Socket): ", error);
 
-    Cookies.remove("tutor_access_token");
-    Cookies.remove("student_access_token");
+    // Cookies.remove("tutor_access_token");
+    // Cookies.remove("student_access_token");
 
-    window.location.href =
-      role === "tutor" ? "/tutor/signin" : "/student/signin";
-  } finally {
+    // window.location.href =
+    //   role === "tutor" ? "/tutor/signin" : "/student/signin";
+    console.log("REFRESHING ERRORR", error)
+    } finally {
     isRefreshing = false;
   }
 });

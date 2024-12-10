@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
-import React, { useCallback, useEffect, useState } from "react";
-import { Search, Plus, Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useCallback, useEffect, useState } from "react";
+import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,8 +19,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDispatch, useSelector } from "react-redux";
-import { getStudentsByTutorId, getTutorsByStudentId } from "@/store/thunks/chatThunks";
-import { setActiveChat } from "@/store/slices/chatSlice";
+import {
+  getStudentsByTutorId,
+  getTutorsByStudentId,
+} from "@/store/thunks/chatThunks";
+import moment from "moment";
 
 export function Sidebar({
   onCreateNewChat,
@@ -29,27 +31,24 @@ export function Sidebar({
   conversations,
   activeConversation,
   role,
-  senderData
+  senderData,
 }) {
   const [open, setOpen] = useState(false);
-  // const [value, setValue] = useState("");
   const dispatch = useDispatch();
-  const {
-    availableUsersToChat,
-  } = useSelector((state) => state?.chat);
+  const { availableUsersToChat } = useSelector((state) => state?.chat);
 
   const fetchUsers = useCallback(async () => {
     try {
       console.log("Fetching Students");
-      if(role === "student") {
+      if (role === "student") {
         await dispatch(getTutorsByStudentId(senderData.user_id)).unwrap();
-      } else if(role === "tutor") {
+      } else if (role === "tutor") {
         await dispatch(getStudentsByTutorId(senderData.user_id)).unwrap();
       }
     } catch (error) {
       console.error("Failed to fetch students:", error);
     }
-  }, [dispatch, senderData?.user_id]);
+  }, [dispatch, senderData?.user_id, role]);
 
   useEffect(() => {
     if (senderData?.user_id) {
@@ -66,6 +65,7 @@ export function Sidebar({
     setOpen(false);
     onCreateNewChat(user_id);
   };
+
   return (
     <div className="flex h-full w-64 flex-col border-r">
       <div className="p-4 border-b">
@@ -121,25 +121,91 @@ export function Sidebar({
             <button
               key={conversation._id || index}
               onClick={() => onUserSelectConversation(conversation)}
-              className={`flex items-start gap-2 w-full p-2 rounded-lg transition-colors ${
+              className={`flex items-center w-full p-3 rounded-lg transition-colors ${
                 activeConversation?._id === conversation?._id
                   ? "bg-orange-100"
                   : "hover:bg-gray-50"
               }`}
             >
-              <UserAvatar user={conversation?.userDetails?.[0]} size="m" />
-              <div className="flex-1 text-left">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm">
-                    {conversation?.userDetails?.[0]?.full_name}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {conversation?.lastMessage?.timestamp || ""}
-                  </span>
+              <UserAvatar
+                user={conversation?.userDetails?.[0]}
+                isOnline={
+                  role === "student"
+                    ? conversation?.tutor_is_online
+                    : role === "tutor"
+                    ? conversation?.student_is_online
+                    : null
+                }
+                size="m"
+              />
+              <div className="ml-3 flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-1">
+                  <div className="flex flex-col items-start">
+                    <span className="font-semibold text-sm truncate mr-2">
+                      {conversation?.userDetails?.[0]?.full_name}
+                    </span>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {conversation?.last_message?.message_text &&
+                      conversation?.last_message?.sender_id ===
+                        senderData?.user_id
+                        ? "You: "
+                        : ""}
+                      {conversation?.last_message?.message_text
+                        ? conversation.last_message.message_text.length > 15
+                          ? conversation.last_message.message_text.substring(
+                              0,
+                              15
+                            ) + "..."
+                          : conversation.last_message.message_text
+                        : "No messages yet"}
+                    </p>
+                  </div>
+                  <div className="flex flex-col  items-end ml-2 flex-shrink-0">
+                    <span
+                      className={`text-xs  ${
+                        role === "tutor"
+                          ? conversation?.unread_message_count?.tutor === 0
+                            ? "text-gray-500 mb-4 "
+                            : "text-orange-500 font-semibold"
+                          : role === "student"
+                          ? conversation?.unread_message_count?.student === 0
+                            ? "text-gray-500 mb-4 "
+                            : "text-orange-500 font-semibold"
+                          : null
+                      }`}
+                    >
+                      {conversation?.last_message?.time_stamp &&
+                        moment(conversation?.last_message?.time_stamp).format(
+                          "h:mm A"
+                        )}
+                    </span>
+                    {role === "tutor" ? (
+                      conversation?.unread_message_count?.tutor > 0 && (
+                        <span className="bg-orange-500 text-white text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[20px] text-center mt-1">
+                          {conversation?.unread_message_count?.tutor}
+                        </span>
+                      )
+                    ) : role === "student" ? (
+                      conversation?.unread_message_count?.student > 0 && (
+                        <span className="bg-orange-500 text-white text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[20px] text-center mt-1">
+                          {conversation?.unread_message_count?.student}
+                        </span>
+                      )
+                    ) : (
+                      <div className="bg-transparent px-1.5 py-2"></div>
+                    )}
+
+                    {/* {conversation?.unread_message_count > 0 &&
+                    conversation?.last_message?.sender_id !==
+                      senderData?.user_id ? (
+                      <span className="bg-orange-500 text-white text-xs font-medium px-1.5 py-0.5 rounded-full min-w-[20px] text-center mt-1">
+                        {conversation?.unread_message_count}
+                      </span>
+                    ) : (
+                      <div className="bg-transparent px-1.5 py-2"></div>
+                    )} */}
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground truncate">
-                  {conversation?.lastMessage?.text || "No messages yet"}
-                </p>
               </div>
             </button>
           ))}
