@@ -119,7 +119,7 @@ export function Sidebar({
         <div className="p-2">
           {conversations?.map((conversation, index) => (
             <button
-              key={conversation._id || index}
+              key={conversation?._id || index}
               onClick={() => onUserSelectConversation(conversation)}
               className={`flex items-center w-full p-3 rounded-lg transition-colors ${
                 activeConversation?._id === conversation?._id
