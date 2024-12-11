@@ -39,7 +39,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export function ChatHeader({ conversation, role }) {
+export function ChatHeader({ conversation }) {
   // const {
   //   chats: conversations,
   //   activeChat,
@@ -50,7 +50,6 @@ export function ChatHeader({ conversation, role }) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportReason, setReportReason] = useState("");
-  // console.log("HEader CONVERSATION",conversation)
 
   const handleBlock = () => {
     console.log("User blocked");
@@ -81,13 +80,13 @@ export function ChatHeader({ conversation, role }) {
       ) : (
         <>
           <div className="flex items-center gap-3">
-            <UserAvatar user={conversation?.userDetails?.[0]} size="md" />
+            <UserAvatar status={"disabled"} user={conversation?.userDetails?.[0]} size="md" />
             <div>
               <h3 className="font-semibold text-sm">
                 {conversation?.userDetails?.[0]?.full_name}
               </h3>
               <p className="text-xs text-muted-foreground">
-                {role === "student"
+                {/* {role === "student"
                   ? conversation?.tutor_is_online
                     ? "Online"
                     : "Offline"
@@ -95,7 +94,7 @@ export function ChatHeader({ conversation, role }) {
                   ? conversation?.student_is_online
                     ? "Online"
                     : "Offline"
-                  : null}
+                  : null} */}
               </p>
             </div>
           </div>

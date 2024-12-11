@@ -129,6 +129,7 @@ export function Sidebar({
             >
               <UserAvatar
                 user={conversation?.userDetails?.[0]}
+                status={"enabled"}
                 isOnline={
                   role === "student"
                     ? conversation?.tutor_is_online

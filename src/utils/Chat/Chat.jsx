@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect, useCallback, useRef } from "react";
 import socket from "@/Services/Socket.js";
 import { Sidebar } from "./chatComponents/Sidebar";
@@ -25,7 +26,6 @@ export function Chat({ role }) {
   } = useSelector((state) => state.chat);
   const { tutorData } = useSelector((state) => state.tutor);
   const { studentData } = useSelector((state) => state.student);
-  const { availableUsersToChat } = useSelector((state) => state?.chat);
 
   const senderDetails = role === "student" ? studentData : tutorData;
   const sender_id = senderDetails?.user_id;
@@ -49,9 +49,9 @@ export function Chat({ role }) {
       if (chatData?._id !== activeConversationRef.current?._id) {
         console.log("Not in chat");
         toast({
-          title: `Message from ${role === "student" ? "Tutor" : "Student"}`,
+          title: `Message from a ${role === "student" ? "Tutor" : "Student"}`,
           description: message?.message_text || "New Message",
-          duration: 3000
+          duration: 3000,
         });
         fetchChats();
       } else {
