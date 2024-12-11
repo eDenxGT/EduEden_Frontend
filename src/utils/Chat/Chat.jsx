@@ -188,7 +188,7 @@ export function Chat({ role }) {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-white">
+    <div className={`flex ${ activeConversation ? "h-[calc(100vh-4rem)]" : "h-full"} bg-white`}>
       <Sidebar
         conversations={conversations}
         activeConversation={activeConversation}
@@ -199,7 +199,9 @@ export function Chat({ role }) {
       />
 
       <div className="flex flex-1 flex-col">
-        <ChatHeader role={role} conversation={activeConversation} />
+        {activeConversation && (
+          <ChatHeader role={role} conversation={activeConversation} />
+        )}
         <ChatArea
           conversation={activeConversation}
           role={role}

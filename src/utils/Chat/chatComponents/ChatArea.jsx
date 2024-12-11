@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { Send, Smile } from 'lucide-react';
+import { Send, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageBubble } from "./MessageBubble";
-import EmojiPicker from 'emoji-picker-react';
+import EmojiPicker from "emoji-picker-react";
 
 export function ChatArea({
   messages,
@@ -48,7 +48,7 @@ export function ChatArea({
   };
 
   const handleEmojiClick = (emojiObject) => {
-    setInputValue(prevInput => prevInput + emojiObject.emoji);
+    setInputValue((prevInput) => prevInput + emojiObject.emoji);
     setShowEmojiPicker(false);
   };
 
@@ -62,7 +62,7 @@ export function ChatArea({
     conversation === null;
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-[calc(100vh-133px)] max-h-[calc(100vh-133px)] bg-gray-50">
       <ScrollArea ref={scrollRef} className="flex-1 p-4">
         {conversation === null ? (
           <div className="flex items-center justify-center h-full">
@@ -87,7 +87,9 @@ export function ChatArea({
                     : conversation?.student_id)
                 }
                 conversation={conversation}
-                receiver={conversation?.userDetails?.[0] || conversation?.userDetails}
+                receiver={
+                  conversation?.userDetails?.[0] || conversation?.userDetails
+                }
                 sender={{ ...senderDetails }}
               />
             ))}
@@ -109,7 +111,7 @@ export function ChatArea({
             </Button>
             {showEmojiPicker && (
               <div className="absolute bottom-full mb-2">
-                <EmojiPicker  onEmojiClick={handleEmojiClick} />
+                <EmojiPicker onEmojiClick={handleEmojiClick} />
               </div>
             )}
           </div>
@@ -134,4 +136,3 @@ export function ChatArea({
     </div>
   );
 }
-
