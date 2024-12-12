@@ -14,11 +14,11 @@ import useCallContext from "@/contexts/CallProvider";
 export function VideoControls() {
   const {
     isVideoOff,
-    setIsVideoOff,
     isMuted,
-    setIsMuted,
     endCall,
     isFullScreen,
+    toggleVideo,
+    toggleAudio,
   } = useCallContext();
 
   const handleEndCall = () => {
@@ -31,7 +31,7 @@ export function VideoControls() {
         variant="ghost"
         size="icon"
         className="h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white"
-        onClick={() => setIsMuted(!isMuted)}
+        onClick={toggleAudio}
       >
         {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
       </Button>
@@ -39,7 +39,7 @@ export function VideoControls() {
         variant="ghost"
         size="icon"
         className="h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white"
-        onClick={() => setIsVideoOff(!isVideoOff)}
+        onClick={toggleVideo}
       >
         {isVideoOff ? (
           <VideoOff className="h-5 w-5" />
@@ -47,10 +47,11 @@ export function VideoControls() {
           <Video className="h-5 w-5" />
         )}
       </Button>
-      {isFullScreen && (
+      {/* {isFullScreen && (
         <>
-          <Button
+           <Button
             variant="ghost"
+            onClick={startScreenSharing}
             size="icon"
             className="h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white"
           >
@@ -64,7 +65,7 @@ export function VideoControls() {
             <Users className="h-5 w-5" />
           </Button>
         </>
-      )}
+      )}  */}
       <Button
         variant="destructive"
         size="icon"

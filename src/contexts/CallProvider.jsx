@@ -90,7 +90,6 @@ export const CallProvider = ({ children }) => {
         });
       });
 
-      //   peer.addStream(stream);
       peer.on("stream", (remoteStream) => {
         console.log("Remote stream tracks:", remoteStream);
         peerVideoRef.current.srcObject = remoteStream;
@@ -140,7 +139,6 @@ export const CallProvider = ({ children }) => {
             callerUserId: callInitiatorData?.user_id,
           });
         });
-        // peer.addStream(stream);
         peer.on("stream", (remoteStream) => {
           console.log("Remote stream tracks:", remoteStream);
           peerVideoRef.current.srcObject = remoteStream;
@@ -183,13 +181,24 @@ export const CallProvider = ({ children }) => {
       setIsVisible(false);
       setIsFullScreen(false);
       setCallerData(null);
+  
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop(); 
+        });
+        streamRef.current = null; 
+      }
+  
       destroyConnection(connectionRef);
-      socket.emit("endCall", { to: incomingCallInfo.from });
+  
+      if (incomingCallInfo?.from) {
+        socket.emit("endCall", { to: incomingCallInfo.from });
+      }
     } catch (error) {
       console.log("Error in end call", error);
     }
   };
-
+  
   const handleIncomingCall = ({ from, signalData, callerData }) => {
     console.log("Incoming call from:", from, signalData);
     setIncomingCallInfo({
@@ -199,6 +208,26 @@ export const CallProvider = ({ children }) => {
       callerData,
     });
     setIsCallPopupOpen(true);
+  };
+
+  const toggleVideo = () => {
+    const videoTrack = streamRef.current
+      ?.getTracks()
+      .find((track) => track.kind === "video");
+    if (videoTrack) {
+      videoTrack.enabled = !videoTrack.enabled;
+      setIsVideoOff(!videoTrack.enabled);
+    }
+  };
+
+  const toggleAudio = () => {
+    const audioTrack = streamRef.current
+      ?.getTracks()
+      .find((track) => track.kind === "audio");
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled;
+      setIsMuted(!audioTrack.enabled);
+    }
   };
 
   return (
@@ -238,6 +267,8 @@ export const CallProvider = ({ children }) => {
         handleIncomingCall,
         answerCall,
         destroyConnection,
+        toggleAudio,
+        toggleVideo,
       }}
     >
       {children}
