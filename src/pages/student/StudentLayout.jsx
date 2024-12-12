@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
 import Header from "../../components/MainComponents/Header";
 import Footer from "../../components/MainComponents/Footer";
-import { Toaster } from "@/components/ui/toaster";
+import { CallPopup } from "@/utils/VideoChat/CallPopup";
+import VideoCall from "@/utils/VideoChat/PopupVideoCalll";
 
 const StudentLayout = () => {
 	return (
@@ -9,7 +10,8 @@ const StudentLayout = () => {
 			<Header role="student" />
 			<Outlet />
 			<Footer />
-			<Toaster />
+			<CallPopup />
+			<VideoCall />
 		</>
 	);
 };

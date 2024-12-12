@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { setActiveChat } from "@/store/slices/chatSlice";
 import { v4 as uuidv4 } from "uuid";
 import { axiosInstance } from "@/api/axiosConfig";
+import useCallContext from "@/contexts/CallProvider";
 
 export function Chat({ role }) {
   const dispatch = useDispatch();
@@ -26,10 +27,11 @@ export function Chat({ role }) {
   } = useSelector((state) => state.chat);
   const { tutorData } = useSelector((state) => state.tutor);
   const { studentData } = useSelector((state) => state.student);
+  const { setCallInitiatorData } = useCallContext()
 
   const senderDetails = role === "student" ? studentData : tutorData;
   const sender_id = senderDetails?.user_id;
-
+  setCallInitiatorData(senderDetails)
   //* ====== Local State ====== *//
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(

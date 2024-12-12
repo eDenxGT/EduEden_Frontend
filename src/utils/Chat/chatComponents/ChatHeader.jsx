@@ -1,3 +1,4 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import {
@@ -38,18 +39,16 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import useCallContext from "@/contexts/CallProvider";
 
-export function ChatHeader({ conversation }) {
-  // const {
-  //   chats: conversations,
-  //   activeChat,
-  // } = useSelector((state) => state?.chat)
-  // const conversation = conversations.find((conversation) => conversation?._id === activeChat?._id)
-
+export function ChatHeader({ conversation, role }) {
   const [showBlockConfirmation, setShowBlockConfirmation] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportReason, setReportReason] = useState("");
+
+  const { setCallerData, setIsVisible, startCall } =
+    useCallContext();
 
   const handleBlock = () => {
     console.log("User blocked");
@@ -67,6 +66,15 @@ export function ChatHeader({ conversation }) {
     setReportReason("");
   };
 
+  const handleVideoCall = () => {
+    const { full_name, avatar } = conversation?.userDetails?.[0];
+    const receiver_id =
+      role === "student" ? conversation?.tutor_id : conversation?.student_id;
+    setCallerData({ receiver_id, name: full_name, avatar });
+    startCall(receiver_id);
+    setIsVisible(true);
+  };
+
   return (
     <div className="flex items-center justify-between border-b p-3">
       {conversation === null ? (
@@ -80,7 +88,11 @@ export function ChatHeader({ conversation }) {
       ) : (
         <>
           <div className="flex items-center gap-3">
-            <UserAvatar status={"disabled"} user={conversation?.userDetails?.[0]} size="md" />
+            <UserAvatar
+              status={"disabled"}
+              user={conversation?.userDetails?.[0]}
+              size="md"
+            />
             <div>
               <h3 className="font-semibold text-sm">
                 {conversation?.userDetails?.[0]?.full_name}
@@ -99,13 +111,22 @@ export function ChatHeader({ conversation }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm">
-              <Video className="h-4 w-4" />
+            <Button
+              className="hover:text-orange-500 font-semibold "
+              variant="none"
+              size="sm"
+              onClick={handleVideoCall}
+            >
+              <Video className="h-6 w-6" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
+                <Button
+                  className="hover:text-orange-500 font-semibold "
+                  variant="none"
+                  size="sm"
+                >
+                  <MoreVertical className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

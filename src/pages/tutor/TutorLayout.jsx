@@ -1,7 +1,8 @@
 import Header from "../../components/MainComponents/Header";
 import { Outlet } from "react-router-dom";
 import Footer from "../../components/MainComponents/TutorFooter";
-import { Toaster } from "@/components/ui/toaster";
+import { CallPopup } from "@/utils/VideoChat/CallPopup";
+import VideoCall from "@/utils/VideoChat/PopupVideoCalll";
 
 const TutorLayout = () => {
   const role = "tutor";
@@ -10,7 +11,8 @@ const TutorLayout = () => {
       <Header role={role} />
       <Outlet />
       <Footer role={role} />
-	  <Toaster />
+      <CallPopup role="student" />
+      <VideoCall />
     </>
   );
 };
