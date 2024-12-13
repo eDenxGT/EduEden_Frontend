@@ -70,9 +70,9 @@ export default function AdminOrderList() {
           </TableHeader>
           <TableBody>
             {orders?.map((order) => (
-              <TableRow key={order?._id}>
-                <TableCell>{order?._id}</TableCell>
-                <TableCell>{order?.student_id}</TableCell>
+              <TableRow key={order?.order_id}>
+                <TableCell>{(order?.order_id)?.slice(0, 10) + "..."}</TableCell>
+                <TableCell>{order?.student_name}</TableCell>
                 <TableCell>
                   {moment(order?.created_at).format("DD-MM-YYYY")}
                 </TableCell>

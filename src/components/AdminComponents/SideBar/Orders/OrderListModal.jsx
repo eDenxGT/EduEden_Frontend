@@ -10,11 +10,13 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import moment from "moment";
 
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
@@ -37,45 +39,48 @@ export function OrderDetailsModal({ isOpen, onClose, order }) {
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>Order Details</DialogTitle>
-          <DialogDescription>Order ID: {order?.id}</DialogDescription>
+          <DialogDescription>Order ID: {order?.order_id}</DialogDescription>
         </DialogHeader>
         <div className="mt-4">
           <h3 className="text-lg font-semibold mb-2">Customer Information</h3>
-          <p>Name: {order?.student_id}</p>
-          <p>Date: {order?.date}</p>
-          <p>Total: ${order?.total?.toFixed(2)}</p>
+          <p>Name: {order?.student_name}</p>
+          <p>Date: {moment(order?.created_at).format("MMM-DD-YYYY")}</p>
+          <p>Total: ${order?.amount?.toFixed(2)}</p>
           <p>
             Status:{" "}
-            <Badge className={`${getStatusColor(order?.status)} text-white`}>
+            <Badge className={`${getStatusColor(order?.status)}  text-white`}>
               {order?.status}
             </Badge>
           </p>
-          <p>Shipping Address: {order?.shippingAddress}</p>
-          <p>Payment Method: {order?.paymentMethod}</p>
+          <p>Payment Method: {"Razor Pay"}</p>
         </div>
         <div className="mt-4">
           <h3 className="text-lg font-semibold mb-2">Order Items</h3>
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Sl No.</TableHead>
                 <TableHead>Item</TableHead>
-                <TableHead>Quantity</TableHead>
+                <TableHead>Seller (or Tutor)</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {order?.items?.map((item) => (
+              {order?.course_details?.map((item, index) => (
                 <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{index+1}</TableCell>
+                  <TableCell>{item.title}</TableCell>
+                  <TableCell>{item.tutor_name}</TableCell>
                   <TableCell>${item.price.toFixed(2)}</TableCell>
-                  <TableCell>
-                    ${(item.quantity * item.price).toFixed(2)}
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={3}>Total:</TableCell>
+                <TableCell>${order?.amount?.toFixed(2)}</TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
         </div>
       </DialogContent>
