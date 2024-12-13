@@ -10,7 +10,7 @@ import PrivateRoute from "../utils/ProtectRoutes/PrivateRoute";
 import Error404Page from "../pages/Others/Error404Page";
 import Categories from "../components/AdminComponents/Categories/Categories";
 import AddCategoriesModal from "../components/AdminComponents/Categories/AddCategoriesModal";
-import Orders from "../components/AdminComponents/SideBar/OrdersList";
+import Orders from "../components/AdminComponents/SideBar/Orders/OrdersList";
 import CourseListing from "../components/AdminComponents/Courses/CourseListing";
 import SingleCourseDetails from "../components/AdminComponents/Courses/SingleCourseDetails";
 import TutorApplications from "@/components/AdminComponents/SideBar/TutorApplcations";

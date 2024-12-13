@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { axiosInstance } from "../../../api/axiosConfig";
 import { toast } from "sonner";
 import { debounce } from "lodash";
-import { UserCircle, Mail, Phone } from 'lucide-react';
+import { UserCircle, Mail, Phone } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 
 const TutorManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -106,10 +106,9 @@ const TutorManagement = () => {
 
   const toggleTutorStatus = async (tutorId) => {
     try {
-      const response = await axiosInstance.post(
-        "/admin/toggle-tutor-status",
-        { tutorId }
-      );
+      const response = await axiosInstance.post("/admin/toggle-tutor-status", {
+        tutorId,
+      });
       if (response.status === 200) {
         setState((prevState) => ({
           ...prevState,
@@ -133,7 +132,11 @@ const TutorManagement = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"}`}>
+    <div
+      className={`min-h-screen ${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"
+      }`}
+    >
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Tutor Management</h1>
         <Card className={`${isDarkMode ? "bg-gray-800" : "bg-white"} p-6`}>
@@ -143,7 +146,11 @@ const TutorManagement = () => {
               placeholder="Search tutors..."
               value={searchQuery}
               onChange={handleSearchInputChange}
-              className={`${isDarkMode ? "bg-gray-700 text-white placeholder-gray-400" : "bg-gray-200 text-gray-800 placeholder-gray-500"} transition-all duration-300 ease-in-out focus:ring-2 focus:ring-blue-500`}
+              className={`${
+                isDarkMode
+                  ? "bg-gray-700 text-white placeholder-gray-400"
+                  : "bg-gray-200 text-gray-800 placeholder-gray-500"
+              } transition-all duration-300 ease-in-out focus:ring-2 focus:ring-blue-500`}
             />
           </div>
           <div className="overflow-x-auto">
@@ -152,14 +159,21 @@ const TutorManagement = () => {
                 <TableRow>
                   <TableHead>Tutor</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Phone Verified</TableHead>
-                  <TableHead>Last Active</TableHead>
+                  {/* <TableHead>Phone Verified</TableHead>*/}
+                  <TableHead>Last Active</TableHead> 
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody className={`transition-opacity duration-300 ${isPageChanging ? 'opacity-0' : 'opacity-100'}`}>
+              <TableBody
+                className={`transition-opacity duration-300 ${
+                  isPageChanging ? "opacity-0" : "opacity-100"
+                }`}
+              >
                 {currentTutors.map((tutor) => (
-                  <TableRow key={tutor.user_id} className="transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <TableRow
+                    key={tutor.user_id}
+                    className="transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
                     <TableCell>
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
@@ -189,25 +203,28 @@ const TutorManagement = () => {
                         <span>{tutor.email}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="flex items-center">
-                        <Badge 
-                                              className={`transition-all duration-300 ease-in-out ${tutor.phoneVerified ? "bg-green-500" : "bg-yellow-400"} hover:scale-105`}
-
+                        <Badge
+                          className={`transition-all duration-300 ease-in-out ${
+                            tutor.phoneVerified
+                              ? "bg-green-500"
+                              : "bg-yellow-400"
+                          } hover:scale-105`}
                         >
                           {tutor.phoneVerified ? "Verified" : "Not Verified"}
                         </Badge>
                       </div>
-                    </TableCell>
-                    <TableCell>{tutor.last_login || "Inactive"}</TableCell>
+                    </TableCell> */}
+                    <TableCell>{tutor.last_login || "Inactive"}</TableCell> 
                     <TableCell>
                       <Button
                         onClick={() => toggleTutorStatus(tutor.user_id)}
                         variant={tutor.is_blocked ? "destructive" : "default"}
                         className={`w-24 h-10 transition-all duration-300 ease-in-out transform hover:scale-105 ${
-                          tutor.is_blocked 
+                          tutor.is_blocked
                             ? "bg-green-500 hover:bg-green-600 text-white"
-                            : "bg-red-500 hover:bg-red-600 text-white" 
+                            : "bg-red-500 hover:bg-red-600 text-white"
                         }`}
                       >
                         {tutor.is_blocked ? "Unblock" : "Block"}
@@ -223,9 +240,13 @@ const TutorManagement = () => {
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       onClick={() => paginate(currentPage - 1)}
-                      className={`transition-all duration-300 ease-in-out ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                      className={`transition-all duration-300 ease-in-out ${
+                        currentPage === 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:scale-105"
+                      }`}
                       disabled={currentPage === 1}
                     />
                   </PaginationItem>
@@ -240,7 +261,11 @@ const TutorManagement = () => {
                           <PaginationLink
                             onClick={() => paginate(i + 1)}
                             isActive={currentPage === i + 1}
-                            className={`transition-all duration-300 ease-in-out hover:scale-105 ${currentPage === i + 1 ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                            className={`transition-all duration-300 ease-in-out hover:scale-105 ${
+                              currentPage === i + 1
+                                ? "bg-orange-500 text-white"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            }`}
                           >
                             {i + 1}
                           </PaginationLink>
@@ -252,9 +277,13 @@ const TutorManagement = () => {
                     return null;
                   })}
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       onClick={() => paginate(currentPage + 1)}
-                      className={`transition-all duration-300 ease-in-out ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                      className={`transition-all duration-300 ease-in-out ${
+                        currentPage === totalPages
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:scale-105"
+                      }`}
                       disabled={currentPage === totalPages}
                     />
                   </PaginationItem>
@@ -269,4 +298,3 @@ const TutorManagement = () => {
 };
 
 export default TutorManagement;
-
