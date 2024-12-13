@@ -17,23 +17,14 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import moment from "moment";
+import { getStatusColor } from "@/lib/helpers";
 
-const getStatusColor = (status) => {
-  switch (status.toLowerCase()) {
-    case "success":
-      return "bg-green-500";
-    case "rejected":
-      return "bg-red-500";
-    case "pending":
-      return "bg-orange-500";
-    default:
-      return "bg-gray-500";
-  }
-};
-
-export function OrderDetailsModal({ isOpen, onClose, order }) {
+export function OrderDetailsModal({ isOpen, onClose, order, tutors }) {
   if (!order) return null;
-
+  const getTutorName = (tutor_id) => {
+    const tutor = tutors?.find((tutor) => tutor?.user_id === tutor_id);
+    return tutor ? tutor?.full_name : "N/A";
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px]">
@@ -55,22 +46,22 @@ export function OrderDetailsModal({ isOpen, onClose, order }) {
           <p>Payment Method: {"Razor Pay"}</p>
         </div>
         <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">Order Items</h3>
+          <h3 className="text-lg font-semibold mb-2">Ordered Courses</h3>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Sl No.</TableHead>
-                <TableHead>Item</TableHead>
+                <TableHead>Courses</TableHead>
                 <TableHead>Seller (or Tutor)</TableHead>
                 <TableHead>Price</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {order?.course_details?.map((item, index) => (
-                <TableRow key={item.id}>
-                  <TableCell>{index+1}</TableCell>
+                <TableRow key={item.course_id}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.tutor_name}</TableCell>
+                  <TableCell>{getTutorName(item.tutor_id)}</TableCell>
                   <TableCell>${item.price.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
