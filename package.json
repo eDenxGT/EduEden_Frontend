@@ -53,6 +53,7 @@
     "react-rnd": "^10.4.13",
     "react-router-dom": "^6.28.0",
     "react-toastify": "^10.0.6",
+    "recharts": "^2.15.0",
     "redux-persist": "^6.0.0",
     "reselect": "^5.1.1",
     "sass": "^1.80.6",

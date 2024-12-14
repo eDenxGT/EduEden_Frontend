@@ -2,7 +2,9 @@ import { Route, Routes } from "react-router-dom";
 import PublicLayout from "../pages/PublicPage/PublicLayout";
 import LandingPage from "../components/PubicPages/LandingPage";
 import PublicRoute from "../utils/ProtectRoutes/PublicRoute";
-import Error404Page from "../pages/Others/Error404Page";
+import ContactPage from "@/pages/Others/ContactUs";
+import NotFoundPage from "@/pages/Others/NotFoundPage";
+import AboutPage from "@/pages/Others/AboutUs";
 
 const PublicRoutes = () => {
 	return (
@@ -15,10 +17,8 @@ const PublicRoutes = () => {
 					</PublicRoute>
 				}>
 				<Route path="" element={<LandingPage />} />
-				{/* <Route path="contact" element={<ContactPage />} /> */}
 			</Route>
-
-			<Route path="/*" element={<Error404Page />} />
+			<Route path="/*" element={<NotFoundPage />} />
 		</Routes>
 	);
 };

@@ -2,7 +2,6 @@
 import socket from "@/Services/Socket";
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -32,6 +31,9 @@ export const CallProvider = ({ children }) => {
   useEffect(() => {
     console.log("Stream updated:", streamRef.current);
   }, [streamRef.current]);
+  useEffect(() => {
+    console.log("Peer Stream updated:", peerStreamRef.current);
+  }, [peerStreamRef.current]);
 
   useEffect(() => {
     socket.on("incomingCall", handleIncomingCall);
@@ -51,13 +53,10 @@ export const CallProvider = ({ children }) => {
           audio: true,
         });
         streamRef.current = newStream;
-
+        console.log("Stream initialized:", newStream);
         if (myVideoRef.current) {
           myVideoRef.current.srcObject = newStream;
-          await myVideoRef.current.play();
         }
-
-        console.log("Stream initialized:", newStream);
       }
     } catch (error) {
       console.error("Error initializing stream:", error);
@@ -94,9 +93,6 @@ export const CallProvider = ({ children }) => {
         console.log("Remote stream tracks:", remoteStream);
         peerVideoRef.current.srcObject = remoteStream;
         peerStreamRef.current = remoteStream;
-        peerVideoRef.current.play().catch((error) => {
-          console.error("Error playing video:", error);
-        });
       });
       peer.on("iceStateChange", (state) => {
         console.log("ICE State Change:", state);
@@ -143,9 +139,9 @@ export const CallProvider = ({ children }) => {
           console.log("Remote stream tracks:", remoteStream);
           peerVideoRef.current.srcObject = remoteStream;
           peerStreamRef.current = remoteStream;
-          peerVideoRef.current.play().catch((error) => {
-            console.error("Error playing video:", error);
-          });
+          // peerVideoRef.current.play().catch((error) => {
+          //   console.error("Error playing video:", error);
+          // });
         });
         peer.on("iceStateChange", (state) => {
           console.log("ICE State Change:", state);

@@ -7,13 +7,13 @@ import StudentManagement from "../components/AdminComponents/SideBar/StudentMana
 import AdminLayout from "../pages/admin/AdminLayout";
 import PublicRoute from "../utils/ProtectRoutes/PublicRoute";
 import PrivateRoute from "../utils/ProtectRoutes/PrivateRoute";
-import Error404Page from "../pages/Others/Error404Page";
 import Categories from "../components/AdminComponents/Categories/Categories";
 import AddCategoriesModal from "../components/AdminComponents/Categories/AddCategoriesModal";
 import Orders from "../components/AdminComponents/SideBar/Orders/OrdersList";
 import CourseListing from "../components/AdminComponents/Courses/CourseListing";
 import SingleCourseDetails from "../components/AdminComponents/Courses/SingleCourseDetails";
 import TutorApplications from "@/components/AdminComponents/SideBar/TutorApplcations";
+import NotFoundPage from "@/pages/Others/NotFoundPage";
 
 const AdminRoutes = () => {
 	return (
@@ -48,7 +48,7 @@ const AdminRoutes = () => {
 					{/* <Route path="settings" element={<AdminSettings />} /> */}
 				</Route>
 
-				<Route path="/*" element={<Error404Page />} />
+				<Route path="/*" element={<NotFoundPage />} />
 			</Routes>
 		</>
 	);

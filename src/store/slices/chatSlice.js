@@ -41,7 +41,6 @@ const chatSlice = createSlice({
 			.addCase(fetchMessagesByChatId.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				state.messages = action.payload;
-				console.log(state.messages);
 			})
 			.addCase(createNewChat.fulfilled, (state, action) => {
 				state.activeChat = action.payload;

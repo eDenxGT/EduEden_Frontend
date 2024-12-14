@@ -5,7 +5,6 @@ import TutorDashboard from "../components/TutorComponents/Dashboard/TutorDashboa
 import TutorLayout from "../pages/tutor/TutorLayout";
 import PublicRoute from "../utils/ProtectRoutes/PublicRoute";
 import PrivateRoute from "../utils/ProtectRoutes/PrivateRoute";
-import Error404Page from "../pages/Others/Error404Page";
 import Settings from "../components/TutorComponents/Settings/Settings";
 import ProfileManagement from "../components/TutorComponents/Settings/ProfileManagement";
 import MyCourses from "../components/TutorComponents/Courses/MyCourses";
@@ -14,6 +13,8 @@ import CourseDetails from "../components/TutorComponents/Courses/CourseDetails";
 import EditCourseLayout from "../components/TutorComponents/Courses/EditCourseLayout";
 import CoursePlayer from "../components/TutorComponents/Courses/CoursePlayer";
 import { Chat } from "@/utils/Chat/Chat";
+import Earnings from "@/components/TutorComponents/Settings/Earnings";
+import NotFoundPage from "@/pages/Others/NotFoundPage";
 
 const TutorRoutes = () => {
 	return (
@@ -58,10 +59,11 @@ const TutorRoutes = () => {
 					<Route path="courses/new" element={<CreateCourseLayout />} />
 
 					<Route path="chat" element={<Chat role="tutor" />} />
+					<Route path="earnings" element={<Earnings />} />
 
 
 				</Route>
-				<Route path="/*" element={<Error404Page />} />
+				<Route path="/*" element={<NotFoundPage />} />
 			</Routes>
 		</>
 	);

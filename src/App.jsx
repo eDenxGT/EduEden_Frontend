@@ -12,6 +12,8 @@ import Error404Page from "./pages/Others/Error404Page";
 import PublicRoute from "./utils/ProtectRoutes/PublicRoute";
 import LoadingUi from "./utils/Modals/LoadingUi";
 import SpinnerLoadingModal from "./utils/Modals/SpinnerLoadingModal";
+import ContactPage from "./pages/Others/ContactUs";
+import AboutPage from "./pages/Others/AboutUs";
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
         />
 
         {/* <Route path="/loading" element={<LoadingUi />} /> */}
+        <Route path="/about-us"  element={<AboutPage />} />
+        <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/*" element={<Error404Page />} />
       </Routes>
       <LoadingUi />

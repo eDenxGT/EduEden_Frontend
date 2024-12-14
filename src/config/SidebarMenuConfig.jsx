@@ -36,21 +36,21 @@ const navItems = {
 			icon: <BookCheck className="h-5 w-5" />,
 			link: "/student/my-courses",
 		},
-		{
-			title: "Teachers",
-			icon: <FaChalkboardTeacher className="h-5 w-5" />,
-			href: "/student/teachers",
-		},
+		// {
+		// 	title: "Tutors",
+		// 	icon: <FaChalkboardTeacher className="h-5 w-5" />,
+		// 	href: "/student/tutors",
+		// },
 		{
 			title: "Chat",
 			icon: <MessageCircleMore className="h-5 w-5" />,
 			href: "/student/chat",
 		},
-		{
-			title: "Wishlist",
-			icon: <Heart className="h-5 w-5" />,
-			href: "/student/wishlist",
-		},
+		// {
+		// 	title: "Wishlist",
+		// 	icon: <Heart className="h-5 w-5" />,
+		// 	href: "/student/wishlist",
+		// },
 		{
 			title: "Purchases",
 			icon: <ShoppingBag className="h-5 w-5" />,
@@ -81,13 +81,13 @@ const navItems = {
 		{
 			title: "Earning",
 			icon: <DollarSign className="h-5 w-5" />,
-			href: "/tutor/earning",
+			href: "/tutor/earnings",
 		},
-		{
-			title: "Quiz",
-			icon: <ClipboardList className="h-5 w-5" />,
-			href: "/tutor/quiz",
-		},
+		// {
+		// 	title: "Quiz",
+		// 	icon: <ClipboardList className="h-5 w-5" />,
+		// 	href: "/tutor/quiz",
+		// },
 		{
 			title: "Chat",
 			icon: <MessageCircleMore className="h-5 w-5" />,

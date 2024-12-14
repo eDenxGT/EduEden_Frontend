@@ -101,32 +101,32 @@ export default function Footer() {
 						</h3>
 						<ul className="space-y-4">
 							<li>
-								<a
-									href="#"
+								<Link
+									to="/about-us"
 									className="text-gray-400 hover:text-[#FF5722] text-sm transition-colors pb-1 inline-flex items-center">
 									About
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
-									href="#"
+								<Link
+									to="/become-instructor"
 									className="text-gray-400 hover:text-[#FF5722] text-sm transition-colors pb-1 inline-flex items-center">
 									Become Instructor
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
-									href="#"
+								<Link
+									to="/contact-us"
 									className="text-gray-400 hover:text-[#FF5722] text-sm transition-colors pb-1 inline-flex items-center">
 									Contact
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
-									href="#"
+								<Link
+									to="/career"
 									className="text-gray-400 hover:text-[#FF5722] text-sm transition-colors pb-1 inline-flex items-center">
 									Career
-								</a>
+								</Link>
 							</li>
 						</ul>
 					</div>

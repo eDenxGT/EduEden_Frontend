@@ -5,7 +5,6 @@ import StudentHomePage from "../components/StudentComponents/StudentHomePage";
 import StudentLayout from "../pages/student/StudentLayout";
 import PublicRoute from "../utils/ProtectRoutes/PublicRoute";
 import PrivateRoute from "../utils/ProtectRoutes/PrivateRoute";
-import Error404Page from "../pages/Others/Error404Page";
 import ProfileManagement from "../components/StudentComponents/Settings/ProfileManagement";
 import Settings from "../components/StudentComponents/Settings/Settings";
 import AllCourseListingPage from "../components/StudentComponents/Courses/AllCourseListingPage";
@@ -20,8 +19,10 @@ import Quiz from "../components/StudentComponents/Courses/Quizzes/Quiz";
 import QuizResult from "../components/StudentComponents/Courses/Quizzes/QuizResult";
 import Certificate from "../components/StudentComponents/Courses/Certificates/Certificate";
 import { Chat } from "@/utils/Chat/Chat";
-import { CallPopup } from "@/utils/VideoChat/CallPopup";
 import VideoCall from "@/utils/VideoChat/PopupVideoCalll";
+import PurchaseHistory from "@/components/StudentComponents/Settings/PurchaseHistory/PurchaseHistory";
+import NotFoundPage from "@/pages/Others/NotFoundPage";
+import AllTutorListing from "@/components/StudentComponents/Settings/AllTutorsListing";
 
 const StudentRoutes = () => {
   return (
@@ -77,16 +78,16 @@ const StudentRoutes = () => {
           />
 
           <Route path="chat" element={<Chat role="student" />} />
-          <Route
-            path="video-chat-popup"
-            element={<CallPopup role="student" />}
-          />
+
+          <Route path="purchases" element={<PurchaseHistory />} />
+          <Route path="tutors" element={<AllTutorListing  />} />
 
           <Route path="checkout/:student_id" element={<CheckoutPage />} />
           <Route path="order/:order_id" element={<OrderSummary />} />
+
         </Route>
 
-        <Route path="/*" element={<Error404Page />} />
+        <Route path="/*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
