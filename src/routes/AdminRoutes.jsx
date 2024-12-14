@@ -14,6 +14,7 @@ import CourseListing from "../components/AdminComponents/Courses/CourseListing";
 import SingleCourseDetails from "../components/AdminComponents/Courses/SingleCourseDetails";
 import TutorApplications from "@/components/AdminComponents/SideBar/TutorApplcations";
 import NotFoundPage from "@/pages/Others/NotFoundPage";
+import WithdrawalRequests from "@/components/AdminComponents/SideBar/TutorWithdrawals/WithdrawalRequests";
 
 const AdminRoutes = () => {
 	return (
@@ -40,6 +41,7 @@ const AdminRoutes = () => {
 					/>
 					<Route path="orders" element={<Orders />} />
 					<Route path="courses" element={<CourseListing />} />
+					<Route path="tutors/withdrawals" element={<WithdrawalRequests />} />
 
 					<Route
 						path="courses/:course_id"

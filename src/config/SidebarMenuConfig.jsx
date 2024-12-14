@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { MdRequestPage, MdRequestQuote } from "react-icons/md";
+import { PiHandWithdrawDuotone } from "react-icons/pi";
 
 const navItems = {
 	student: [
@@ -126,7 +127,7 @@ const navItems = {
 			link: "/admin/students",
 		},
 		{
-			title: "Manage Mentors",
+			title: "Manage Tutors",
 			icon: <Users className="h-5 w-5" />,
 			link: "/admin/tutors",
 		},
@@ -134,6 +135,11 @@ const navItems = {
 			title: "Tutor Applications",
 			icon: <NotepadText className="h-5 w-5" />,
 			link: "/admin/tutors/applications",
+		},
+		{
+			title: "Tutor Withdrawals",
+			icon: <PiHandWithdrawDuotone className="h-5 w-5" />,
+			link: "/admin/tutors/withdrawals",
 		},
 		{
 			title: "Settings",

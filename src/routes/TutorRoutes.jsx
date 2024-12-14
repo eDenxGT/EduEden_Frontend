@@ -13,7 +13,7 @@ import CourseDetails from "../components/TutorComponents/Courses/CourseDetails";
 import EditCourseLayout from "../components/TutorComponents/Courses/EditCourseLayout";
 import CoursePlayer from "../components/TutorComponents/Courses/CoursePlayer";
 import { Chat } from "@/utils/Chat/Chat";
-import Earnings from "@/components/TutorComponents/Settings/Earnings";
+import Earnings from "@/components/TutorComponents/Withdrawals/Earnings";
 import NotFoundPage from "@/pages/Others/NotFoundPage";
 
 const TutorRoutes = () => {

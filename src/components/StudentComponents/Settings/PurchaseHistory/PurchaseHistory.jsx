@@ -218,31 +218,45 @@ export default function PurchaseHistory() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>S.No</TableHead>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Course</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-center">S.No</TableHead>
+              <TableHead className="text-center">Order ID</TableHead>
+              <TableHead className="text-center">Courses</TableHead>
+              <TableHead className="text-center">Quantity</TableHead>
+              <TableHead className="text-center">Date</TableHead>
+              <TableHead className="text-center">Amount</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {purchases?.length > 0 ? (
               purchases?.map((purchase, index) => (
                 <TableRow key={purchase?.order_id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">{index + 1}</TableCell>
+                  <TableCell className="text-center">
                     {purchase?.order_id?.slice(0, 10) + "..."}
                   </TableCell>
-                  <TableCell>
-                    {purchase?.course_details[0]?.title?.slice(0, 20) + "..."}
+                  <TableCell className="text-centermax-h-20 overflow-y-auto max-w-40">
+                    {purchase.course_details?.length > 1 ? (
+                      <>
+                        {purchase.course_details
+                          ?.map((course) => course.title)
+                          .join(` , `)}
+                      </>
+                    ) : (
+                      <>{purchase.course_details?.[0]?.title}</>
+                    )}
                   </TableCell>
-                  <TableCell>
-                    {moment(purchase?.created_at).format("DD-MM-YYYY")}
+                  <TableCell className="text-center">
+                    {purchase?.course_details?.length}
                   </TableCell>
-                  <TableCell>₹{purchase?.amount?.toFixed(2)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
+                    {moment(purchase?.created_at).format(
+                      "DD-MM-YYYY - hh:mm A"
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center">₹{purchase?.amount?.toFixed(2)}</TableCell>
+                  <TableCell className="text-center">
                     <Badge
                       className={`${getStatusColor(
                         purchase?.status
@@ -251,7 +265,7 @@ export default function PurchaseHistory() {
                       {purchase?.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Button
                       variant="outline"
                       size="sm"

@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import { axiosInstance } from "./axiosConfig";
 import { toast } from "sonner";
+import socket from "@/Services/Socket";
 
 const attachRequestInterceptor = (axiosCustomInstance) => {
   axiosCustomInstance.interceptors.request.use(
@@ -52,7 +53,10 @@ const attachResponseInterceptor = (axiosCustomInstance, refreshEndpoint) => {
 
           Cookies.set(`${role}_access_token`, access_token, { expires: 7 });
           console.log(`${role}_access_token stored successfully.`);
-
+          socket.disconnect();
+          socket.auth.role = role;
+          socket.auth.token = access_token;
+          socket.connect();
           originalRequest.headers.Authorization = `Bearer ${access_token}`;
           return axiosCustomInstance(originalRequest);
         } catch (refreshError) {

@@ -1,6 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "@/lib/helpers";
@@ -12,7 +19,7 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
   useEffect(() => {
     setIsModalOpen(isOpen);
   }, [isOpen]);
-  console.log(purchase)
+  console.log(purchase);
 
   const handleClose = () => {
     setIsModalOpen(false);
@@ -37,7 +44,9 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <span className="font-semibold">Date:</span>
-            <span>{moment(purchase?.created_at).format("DD-MM-YYYY - hh:mm A")}</span>
+            <span>
+              {moment(purchase?.created_at).format("DD-MM-YYYY - hh:mm A")}
+            </span>
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <span className="font-semibold">Amount:</span>
@@ -50,13 +59,30 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
             </Badge>
           </div>
           <div className="grid grid-cols-2 items-center gap-2">
-            <span className="font-semibold">Course:</span>
-            <span>{purchase.course_details?.[0]?.title}</span>
+            {purchase.course_details?.length > 1 ? (
+              <>
+                <span className="font-semibold">Courses:</span>
+                <span className="text-sm max-h-20 overflow-y-auto">
+                  {purchase.course_details
+                    ?.map((course) => course.title)
+                    .join(` , `)}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="font-semibold">Course:</span>
+                <span>{purchase.course_details?.[0]?.title}</span>
+              </>
+            )}
           </div>
           {/* <div className="grid grid-cols-2 items-center gap-4">
             <span className="font-semibold">Tutor:</span>
             <span>{purchase.tutor_name}</span>
           </div> */}
+          <div className="grid grid-cols-2 items-center gap-4">
+            <span className="font-semibold">Courses Quantity:</span>
+            <span>{purchase.course_details?.length} Courses</span>
+          </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <span className="font-semibold">Payment Method:</span>
             <span>{"Razor Pay"}</span>
@@ -75,4 +101,3 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
     </Dialog>
   );
 }
-

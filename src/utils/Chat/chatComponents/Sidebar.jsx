@@ -143,7 +143,7 @@ export function Sidebar({
                 <div className="flex justify-between items-center mb-1">
                   <div className="flex flex-col items-start">
                     <span className="font-semibold text-sm truncate mr-2">
-                      {conversation?.userDetails?.[0]?.full_name}
+                      {conversation?.userDetails?.[0]?.full_name.slice(0, 14)+"..."}
                     </span>
                     <p className="text-xs text-muted-foreground truncate">
                       {conversation?.last_message?.message_text &&

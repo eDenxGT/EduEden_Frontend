@@ -291,7 +291,7 @@ const Header = ({ role }) => {
                   role === "student"
                     ? "/student/home"
                     : role === "tutor"
-                    ? "/tutor/home"
+                    ? "/tutor/dashboard"
 					: role === "admin"
 					? "/admin/dashboard"
                     : "/"
