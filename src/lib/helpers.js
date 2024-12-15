@@ -5,6 +5,7 @@ const getFromLocalStorage = (key) => localStorage.getItem(key);
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
     case "success":
+    case "approved":
       return "bg-green-500";
     case "rejected":
       return "bg-red-500";

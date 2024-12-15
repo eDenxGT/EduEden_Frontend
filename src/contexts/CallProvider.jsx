@@ -161,7 +161,7 @@ export const CallProvider = ({ children }) => {
   };
 
   const destroyConnection = (connectionRef) => {
-    connectionRef.current.destroy();
+    connectionRef.current?.destroy();
     // window.location.reload();
   };
 

@@ -1,26 +1,35 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getStatusColor } from "@/lib/helpers";
-// import { updateWithdrawalStatus } from "@/api/backendCalls/admin";
 import moment from "moment";
 
-export function WithdrawalDetailsModal({ isOpen, onClose, request, onStatusUpdate }) {
-  const [isModalOpen, setIsModalOpen] = useState(isOpen);
-  const [rejectionReason, setRejectionReason] = useState("");
+export function WithdrawalDetailsModal({
+  isOpen,
+  onClose,
+  request,
+  onStatusUpdate,
+}) {
+//   const [rejectionReason, setRejectionReason] = useState("");
 
   const handleClose = () => {
-    setIsModalOpen(false);
     onClose();
   };
 
   const handleStatusUpdate = async (newStatus) => {
     try {
-    //   await updateWithdrawalStatus(request.request_id, newStatus, rejectionReason);
-    //   onStatusUpdate(request.request_id, newStatus);
+      onStatusUpdate(request._id, newStatus);
       handleClose();
     } catch (error) {
       console.error("Error updating withdrawal status:", error);
@@ -30,7 +39,7 @@ export function WithdrawalDetailsModal({ isOpen, onClose, request, onStatusUpdat
   if (!request) return null;
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Withdrawal Request Details</DialogTitle>
@@ -53,31 +62,41 @@ export function WithdrawalDetailsModal({ isOpen, onClose, request, onStatusUpdat
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <Label>Date Requested:</Label>
-            <span>{moment(request.created_at).format("DD-MM-YYYY HH:mm")}</span>
+            <span>{moment(request.created_at).format("DD-MM-YYYY hh:mm")}</span>
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <Label>Status:</Label>
-            <Badge className={`${getStatusColor(request.status)} text-white`}>
+            <Badge
+              className={`${getStatusColor(
+                request.status
+              )} max-w-fit text-white`}
+            >
               {request.status}
             </Badge>
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <Label>Payment Method:</Label>
-            <span>{request.payment_method}</span>
+            <span>
+              {request.payment_method === "card"
+                ? request?.card_details?.type
+                : "UPI"}
+            </span>
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <Label>Account Details:</Label>
-            <span>{request.account_details}</span>
+            <span>{request?.card_details?.card_number}</span>
           </div>
           {request?.status === "rejected" && (
             <div className="grid grid-cols-2 items-center gap-4">
               <Label>Rejection Reason:</Label>
-              <span>{request.rejection_reason}</span>
+              <span>{request.remarks}</span>
             </div>
           )}
-          {request.status === "pending" && (
+          {/* {request.status === "pending" && (
             <div className="grid grid-cols-1 gap-4">
-              <Label htmlFor="rejectionReason">Rejection Reason (optional):</Label>
+              <Label htmlFor="rejectionReason">
+                Rejection Reason (optional):
+              </Label>
               <Textarea
                 id="rejectionReason"
                 value={rejectionReason}
@@ -85,15 +104,21 @@ export function WithdrawalDetailsModal({ isOpen, onClose, request, onStatusUpdat
                 placeholder="Enter reason for rejection..."
               />
             </div>
-          )}
+          )} */}
         </div>
         <DialogFooter>
           {request?.status === "pending" && (
             <>
-              <Button onClick={() => handleStatusUpdate("approved")} className="bg-green-500 hover:bg-green-600 text-white">
+              <Button
+                onClick={() => handleStatusUpdate("approved")}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
                 Approve
               </Button>
-              <Button onClick={() => handleStatusUpdate("rejected")} className="bg-red-500 hover:bg-red-600 text-white">
+              <Button
+                onClick={() => handleStatusUpdate("rejected")}
+                className="bg-red-500 hover:bg-red-600 text-white"
+              >
                 Reject
               </Button>
             </>
@@ -104,4 +129,3 @@ export function WithdrawalDetailsModal({ isOpen, onClose, request, onStatusUpdat
     </Dialog>
   );
 }
-

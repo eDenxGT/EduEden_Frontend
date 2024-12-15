@@ -18,16 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, ChevronLeft, ChevronRight, Check, X } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { WithdrawalDetailsModal } from "./WithdrawDetailsModal";
 import moment from "moment";
 import { BiReset } from "react-icons/bi";
 import { getStatusColor } from "@/lib/helpers";
 import debounce from "lodash/debounce";
-// import {
-//   getWithdrawalRequests,
-//   updateWithdrawalStatus,
-// } from "@/api/backendCalls/admin";
+import { getWithdrawalRequests, updateWithdrawalStatus } from "@/api/backendCalls/admin";
 
 export default function WithdrawalRequests() {
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -61,8 +58,9 @@ export default function WithdrawalRequests() {
 
   const handleStatusUpdate = async (requestId, newStatus) => {
     try {
-    //   await updateWithdrawalStatus(requestId, newStatus);
-    //   fetchRequests();
+        console.log(requestId, newStatus)
+        await updateWithdrawalStatus(requestId, newStatus);
+        fetchRequests();
     } catch (error) {
       console.error("Error updating withdrawal status:", error);
     }
@@ -89,9 +87,9 @@ export default function WithdrawalRequests() {
   const fetchRequestsDebounced = debounce(
     async (params, setRequests, setTotalPages) => {
       try {
-        // const fetchedRequests = await getWithdrawalRequests(params);
-        // setRequests(fetchedRequests.requests);
-        // setTotalPages(fetchedRequests.totalPages);
+        const fetchedRequests = await getWithdrawalRequests(params);
+        setRequests(fetchedRequests.withdrawals);
+        setTotalPages(fetchedRequests.totalPages);
       } catch (error) {
         console.error("Error fetching withdrawal requests:", error);
       }
@@ -113,7 +111,7 @@ export default function WithdrawalRequests() {
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 max-w-7xl">
       <h1 className="text-2xl font-bold mb-5">Tutor Withdrawal Requests</h1>
-      
+
       {/* Search and Filters */}
       <div className="mb-6 space-y-4">
         <div className="flex items-center space-x-2">
@@ -138,7 +136,6 @@ export default function WithdrawalRequests() {
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
                 <SelectItem value="rejected">Rejected</SelectItem>
@@ -156,7 +153,6 @@ export default function WithdrawalRequests() {
                 <SelectValue placeholder="Select Amount Range" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="0-1000">₹0 - ₹1000</SelectItem>
                 <SelectItem value="1000-5000">₹1000 - ₹5000</SelectItem>
                 <SelectItem value="5000-10000">₹5000 - ₹10000</SelectItem>
@@ -196,17 +192,25 @@ export default function WithdrawalRequests() {
           <TableBody>
             {requests?.length > 0 ? (
               requests?.map((request) => (
-                <TableRow key={request?.request_id}>
+                <TableRow key={request?._id}>
                   <TableCell className="text-center">
-                    {request?.request_id?.slice(0, 10) + "..."}
-                  </TableCell>
-                  <TableCell className="text-center">{request?.tutor_name}</TableCell>
-                  <TableCell className="text-center">₹{request?.amount?.toFixed(2)}</TableCell>
-                  <TableCell className="text-center">
-                    {moment(request?.created_at).format("DD-MM-YYYY - hh:mm A")}
+                    {request?._id?.slice(0, 15) + "..."}
                   </TableCell>
                   <TableCell className="text-center">
-                    <Badge className={`${getStatusColor(request?.status)} text-white`}>
+                    {request?.tutor_name}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    ₹{request?.amount?.toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {moment(request?.requested_at).format("DD-MM-YYYY - hh:mm A")}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge
+                      className={`${getStatusColor(
+                        request?.status
+                      )} text-white`}
+                    >
                       {request?.status}
                     </Badge>
                   </TableCell>
@@ -224,7 +228,9 @@ export default function WithdrawalRequests() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleStatusUpdate(request.request_id, "approved")}
+                            onClick={() =>
+                              handleStatusUpdate(request._id, "approved")
+                            }
                             className="bg-green-500 hover:bg-green-600 text-white"
                           >
                             <Check className="h-4 w-4" />
@@ -232,7 +238,9 @@ export default function WithdrawalRequests() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleStatusUpdate(request.request_id, "rejected")}
+                            onClick={() =>
+                              handleStatusUpdate(request._id, "rejected")
+                            }
                             className="bg-red-500 hover:bg-red-600 text-white"
                           >
                             <X className="h-4 w-4" />
@@ -270,7 +278,9 @@ export default function WithdrawalRequests() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           disabled={currentPage === totalPages}
         >
           <ChevronRight className="h-4 w-4" />
@@ -286,4 +296,3 @@ export default function WithdrawalRequests() {
     </div>
   );
 }
-

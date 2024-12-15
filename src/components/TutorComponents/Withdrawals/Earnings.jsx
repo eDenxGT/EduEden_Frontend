@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,15 +10,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, CreditCard, ArrowDownToLine, DollarSign, AlertCircle } from 'lucide-react';
+import {
+  BarChart3,
+  CreditCard,
+  ArrowDownToLine,
+  AlertCircle,
+} from "lucide-react";
 import AddCardModal from "./AddCardModal";
 import WithdrawModal from "./WithdrawModal";
-import { getTutorDetails, getTutorWithdrawals } from "@/api/backendCalls/tutor";
-
-
+import {
+  addCard,
+  getCourseDetailsByTutorId,
+  getTutorDetails,
+  getTutorWithdrawals,
+  withdrawTutorEarnings,
+} from "@/api/backendCalls/tutor";
+import { toast } from "sonner";
+import moment from "moment";
 
 const courseRevenueData = [
-  { name: "JavaScript Basics", total: 15000 },
+  { name: "JavaScript Basics", total: 1000 },
   { name: "React Fundamentals", total: 22000 },
   { name: "Node.js Mastery", total: 18000 },
   { name: "Python for Beginners", total: 12000 },
@@ -55,32 +66,62 @@ const withdrawalHistory = [
 ];
 
 export default function EarningsPage() {
-  const [card, setCard] = useState(null);
   const [isAddCardOpen, setIsAddCardOpen] = useState(false);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [tutorDetails, setTutorDetails] = useState(null);
+  const [withdrawals, setWithdrawals] = useState([]);
+  const [courseStats, setCourseStats] = useState([]);
+  const [card, setCard] = useState(tutorDetails?.card_details);
 
-  const handleAddCard = (cardData) => {
+  const handleAddCard = async (cardData) => {
     setCard({
-      id: "1",
-      last4: cardData.cardNumber.slice(-4),
-      type: cardData.cardType,
-      expiry: cardData.expiry,
-      name: cardData.cardName,
+      last4: cardData.card_number.slice(-4),
+      type: cardData.type,
+      expiry: cardData.expiry_date,
+      name: cardData.owner_name,
     });
+    await addCard(cardData);
     setIsAddCardOpen(false);
   };
 
-  const handleWithdraw = (withdrawData) => {
-    console.log("Withdrawal data:", withdrawData);
-    setIsWithdrawOpen(false);
+  const handleWithdraw = async (withdrawData) => {
+    try {
+      if (withdrawData.amount > tutorDetails?.current_balance) {
+        return toast.error("Invalid Balance");
+      }
+      const response = await withdrawTutorEarnings(withdrawData);
+      if (response) {
+        setIsWithdrawOpen(false);
+        toast.success(response?.message);
+        setTutorDetails({
+          ...tutorDetails,
+          current_balance: tutorDetails?.current_balance - withdrawData.amount,
+          total_withdrawn_amount:
+            tutorDetails?.total_withdrawn_amount + Number(withdrawData.amount),
+        });
+        setWithdrawals([response?.withdrawal, ...withdrawals]);
+      }
+      console.log("Withdrawal data:", response);
+    } catch (error) {
+      console.log("Withdrawal error: ", error);
+    }
   };
 
   const fetchDetails = useCallback(async () => {
     try {
-      const details = await getTutorDetails("earningsPage")
-      const withdrawals = await getTutorWithdrawals();
-      console.log(details, withdrawals)
+      const details = await getTutorDetails("earningsPage");
+      const withdrawalData = await getTutorWithdrawals();
+      const courseStats = await getCourseDetailsByTutorId("earningsPage");
+      setCourseStats(courseStats);
+      setCard({
+        id: "1",
+        last4: details?.card?.card_number?.slice(-4),
+        type: details?.card?.type,
+        expiry: details?.card?.expiry_date,
+        name: details?.card?.owner_name,
+      });
+      console.log(details);
+      setWithdrawals(withdrawalData);
       setTutorDetails(details);
     } catch (error) {
       console.error("Error fetching tutor details:", error);
@@ -90,68 +131,51 @@ export default function EarningsPage() {
   useEffect(() => {
     fetchDetails();
   }, [fetchDetails]);
-  console.log(tutorDetails)
+  console.log(card);
 
-  const maxTotal = Math.max(...courseRevenueData.map(item => item.total));
-  const metrics = [
-    {
-      title: "Total Revenue",
-      value: "$13,804.00",
-      icon: BarChart3,
-      color: "text-red-500",
-    },
-    {
-      title: "Current Balance",
-      value: "$16,593.00",
-      icon: CreditCard,
-      color: "text-blue-500",
-    },
-    {
-      title: "Total Withdrawals",
-      value: "$13,184.00",
-      icon: ArrowDownToLine,
-      color: "text-orange-500",
-    },
-    {
-      title: "Today Revenue",
-      value: "$162.00",
-      icon: DollarSign,
-      color: "text-green-500",
-    },
-  ];
+  const maxTotal = Math.max(...courseStats.map((item) => item.total_revenue));
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-2xl sm:text-3xl font-bold mb-8">Earnings</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card key={index}>
-            <CardContent className="flex flex-col p-4 sm:p-6">
-              <metric.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${metric.color} mb-2`} />
-              <p className="text-xs sm:text-sm text-muted-foreground">{metric.title}</p>
-              <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">{tutorDetails.value}</p>
-            </CardContent>
-          </Card>
-          <Card key={index}>
-            <CardContent className="flex flex-col p-4 sm:p-6">
-              <metric.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${metric.color} mb-2`} />
-              <p className="text-xs sm:text-sm text-muted-foreground">{metric.title}</p>
-              <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">{tutorDetails.value}</p>
-            </CardContent>
-          </Card>
-          <Card >
-            <CardContent className="flex flex-col p-4 sm:p-6">
-              <metric.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${metric.color} mb-2`} />
-              <p className="text-xs sm:text-sm text-muted-foreground">{metric.title}</p>
-              <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">{tutorDetails.value}</p>
-            </CardContent>
-          </Card>
-          <Card key={index}>
-            <CardContent className="flex flex-col p-4 sm:p-6">
-              <metric.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${metric.color} mb-2`} />
-              <p className="text-xs sm:text-sm text-muted-foreground">{metric.title}</p>
-              <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">{tutorDetails.value}</p>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <Card>
+          <CardContent className="flex flex-col p-4 sm:p-6">
+            <BarChart3 className={`h-6 w-6 sm:h-8 sm:w-8 text-red-500 mb-2`} />
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Current Balance
+            </p>
+            <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">
+              ₹{tutorDetails?.current_balance}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col p-4 sm:p-6">
+            <CreditCard
+              className={`h-6 w-6 sm:h-8 sm:w-8 text-blue-500 mb-2`}
+            />
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Total Revenue
+            </p>
+            <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">
+              ₹{tutorDetails?.total_earnings}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col p-4 sm:p-6">
+            <ArrowDownToLine
+              className={`h-6 w-6 sm:h-8 sm:w-8 text-orange-500 mb-2`}
+            />
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Total Withdrawals
+            </p>
+            <p className="text-lg sm:text-2xl font-bold mt-1 sm:mt-2">
+              ₹{tutorDetails?.total_withdrawn_amount}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -160,17 +184,32 @@ export default function EarningsPage() {
             <CardTitle className="text-xl font-bold">Course Earnings</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
-              {courseRevenueData.map((course, index) => (
-                <div key={index} className="flex items-center mb-2">
-                  <div className="w-1/4 text-sm">{course.name}</div>
-                  <div className="w-3/4 h-6 bg-gray-200 rounded">
-                    <div
-                      className="h-full bg-blue-500 rounded"
-                      style={{ width: `${(course.total / maxTotal) * 100}%` }}
-                    ></div>
+            <div className="space-y-4">
+              {courseStats.map((course, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  {/* Course Title */}
+                  <div className="w-1/4 text-sm font-medium text-gray-700 truncate">
+                    {course.title}
                   </div>
-                  <div className="ml-2 text-sm">${course.total.toLocaleString()}</div>
+
+                  {/* Graph Bar */}
+                  <div className="flex items-center w-3/4">
+                    <div className="flex-1 h-6 bg-gray-200 rounded overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 rounded"
+                        style={{
+                          width: `${Math.min(
+                            (course.total_revenue / maxTotal) * 100,
+                            100
+                          )}%`,
+                        }}
+                      ></div>
+                    </div>
+                    {/* Revenue Value */}
+                    <div className="ml-2 text-sm font-semibold text-gray-800">
+                      ₹{course.total_revenue.toLocaleString()}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -184,11 +223,13 @@ export default function EarningsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {card ? (
+            {card && card.last4 && card.type && card.expiry && card.name ? (
               <div className="relative h-40 sm:h-48 w-full overflow-hidden rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 p-4 sm:p-6 text-white">
                 <div className="flex h-full flex-col justify-between">
                   <div className="space-y-1 sm:space-y-2">
-                    <div className="text-base sm:text-lg font-medium">{card.type}</div>
+                    <div className="text-base sm:text-lg font-medium">
+                      {card.type}
+                    </div>
                     <div className="text-xl sm:text-2xl font-bold">
                       **** **** **** {card.last4}
                     </div>
@@ -199,7 +240,7 @@ export default function EarningsPage() {
                       <div>{card.expiry}</div>
                     </div>
                     <div>
-                      <div>Card Name</div>
+                      <div>Card Holder Name</div>
                       <div>{card.name}</div>
                     </div>
                   </div>
@@ -230,9 +271,9 @@ export default function EarningsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-sm font-medium">
-              Current Balance: $16,593.00
+              Current Balance: ₹{tutorDetails?.current_balance}
             </div>
-            {card ? (
+            {card && card.last4 && card.type && card.expiry && card.name ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between rounded-lg border p-3 sm:p-4">
                   <div className="flex items-center space-x-3 sm:space-x-4">
@@ -256,7 +297,7 @@ export default function EarningsPage() {
             ) : (
               <div className="flex items-center justify-center h-20 sm:h-24 bg-gray-100 dark:bg-gray-800 rounded-lg">
                 <p className="text-muted-foreground text-sm">
-                  Add a card to enable withdrawals
+                  Add a card to enable card withdrawals
                 </p>
               </div>
             )}
@@ -273,9 +314,7 @@ export default function EarningsPage() {
                 <p>
                   Withdrawals are typically processed within 6-7 working days.
                 </p>
-                <p>
-                  Ensure your account details are correct to avoid delays.
-                </p>
+                <p>Ensure your account details are correct to avoid delays.</p>
                 <p>
                   For faster processing, consider using our premium withdrawal
                   service.
@@ -292,7 +331,7 @@ export default function EarningsPage() {
             Withdrawal History
           </CardTitle>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
+        <CardContent className="overflow-x-auto max-h-60">
           <Table>
             <TableHeader>
               <TableRow>
@@ -303,26 +342,42 @@ export default function EarningsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {withdrawalHistory.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{item.date}</TableCell>
-                  <TableCell>{item.method}</TableCell>
-                  <TableCell>{item.amount}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        item.status === "Completed"
-                          ? "bg-green-500"
-                          : item.status === "Pending"
-                          ? "bg-yellow-400"
-                          : "bg-red-500"
-                      }
-                    >
-                      {item.status}
-                    </Badge>
+              {withdrawals.length > 0 ? (
+                withdrawals?.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">
+                      {moment(item?.requested_at)?.hours() > 24
+                        ? moment(item?.requested_at)?.format("MMM-DD-YYYY")
+                        : moment(item?.requested_at)?.calendar()}
+                    </TableCell>
+                    <TableCell>
+                      {item.payment_method === "card"
+                        ? item.card_details.type
+                        : item.payment_method === "upi" && "UPI"}
+                    </TableCell>
+                    <TableCell>{item.amount}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          item.status === "approved"
+                            ? "bg-green-500"
+                            : item.status === "pending"
+                            ? "bg-orange-500"
+                            : "bg-red-500"
+                        }
+                      >
+                        {item.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">
+                    No withdrawals found
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -342,4 +397,3 @@ export default function EarningsPage() {
     </div>
   );
 }
-

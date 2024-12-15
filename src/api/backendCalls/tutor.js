@@ -21,19 +21,29 @@ export const getTutorEarnings = async () => {
   }
 };
 
+export const getCourseDetailsByTutorId = async (apiFor) => {
+  try {
+    const response = await axiosInstance.get(`/tutor/get-courses?apiFor=${apiFor}`);
+    return response.data.courses;
+  } catch (error) {
+    console.error("Error fetching course details by tutor ID:", error);
+    throw error;
+  }
+};
+
 export const getTutorWithdrawals = async () => {
   try {
     const response = await axiosInstance.get(`/tutor/get-withdrawals`);
-    return response.data;
+    return response.data.withdrawals;
   } catch (error) {
     console.error("Error fetching tutor withdrawals:", error);
     throw error;
   }
 };
 
-export const withdrawTutorEarnings = async (amount) => {
+export const withdrawTutorEarnings = async (withdrawalData) => {
   try {
-    const response = await axiosInstance.post(`/tutor/withdraw`, { amount });
+    const response = await axiosInstance.post(`/tutor/withdraw`, withdrawalData);
     return response.data;
   } catch (error) {
     console.error("Error withdrawing tutor earnings:", error);

@@ -1,27 +1,41 @@
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 
 const WithdrawModal = ({ isOpen, onClose, onSubmit, card }) => {
   const [withdrawData, setWithdrawData] = useState({
-    amount: '',
-    method: 'card',
-    upiId: ''
-  })
+    amount: "",
+    method: "",
+    upi_id: "",
+  });
 
   const handleChange = (e) => {
-    setWithdrawData({ ...withdrawData, [e.target.name]: e.target.value })
-  }
+    setWithdrawData({ ...withdrawData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    onSubmit(withdrawData)
-  }
+    e.preventDefault();
+    if (
+      withdrawData.amount === "" ||
+      withdrawData.method === "" ||
+      (withdrawData.method === "upi" && withdrawData.upi_id === "")
+    )
+      return toast.info("Please fill all required fields!");
+    onSubmit(withdrawData);
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -37,24 +51,31 @@ const WithdrawModal = ({ isOpen, onClose, onSubmit, card }) => {
                 id="amount"
                 name="amount"
                 type="number"
+                placeholder={"Enter your amount"}
                 value={withdrawData.amount}
                 onChange={handleChange}
-                required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="method">Withdrawal Method</Label>
-              <Select name="method" onValueChange={(value) => handleChange({ target: { name: 'method', value } })}>
+              <Select
+                name="method"
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "method", value } })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select withdrawal method" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="card">Credit/Debit Card</SelectItem>
+                  {card && card.last4 && card.type && card.expiry && card.name && (
+                    <SelectItem value="card">Credit/Debit Card</SelectItem>
+                  )}
                   <SelectItem value="upi">UPI</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            {withdrawData.method === 'card' && (
+            {withdrawData.method === "card" && (
               <div className="space-y-2">
                 <Label>Card Details</Label>
                 <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-md">
@@ -64,28 +85,30 @@ const WithdrawModal = ({ isOpen, onClose, onSubmit, card }) => {
                 </div>
               </div>
             )}
-            {withdrawData.method === 'upi' && (
+            {withdrawData.method === "upi" && (
               <div className="space-y-2">
                 <Label htmlFor="upiId">UPI ID</Label>
                 <Input
                   id="upiId"
-                  name="upiId"
-                  value={withdrawData.upiId}
+                  name="upi_id"
+                  value={withdrawData.upi_id}
                   onChange={handleChange}
-                  required
                 />
               </div>
             )}
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
-              <Button className="bg-[#FF5722] hover:bg-[#F4511E]" type="submit">Withdraw</Button>
+              <Button variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button className="bg-[#FF5722] hover:bg-[#F4511E]" type="submit">
+                Withdraw
+              </Button>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default WithdrawModal
-
+export default WithdrawModal;

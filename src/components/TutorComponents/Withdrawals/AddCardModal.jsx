@@ -7,11 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const AddCardModal = ({ isOpen, onClose, onSubmit }) => {
   const [cardData, setCardData] = useState({
-    cardNumber: '',
-    cardName: '',
-    expiry: '',
+    card_number: '',
+    owner_name: '',
+    expiry_date: '',
     cvv: '',
-    cardType: ''
+    type: ''
   })
 
   const handleChange = (e) => {
@@ -37,8 +37,8 @@ const AddCardModal = ({ isOpen, onClose, onSubmit }) => {
               <Label htmlFor="cardNumber">Card Number</Label>
               <Input
                 id="cardNumber"
-                name="cardNumber"
-                value={cardData.cardNumber}
+                name="card_number"
+                value={cardData.card_number}
                 onChange={handleChange}
                 required
               />
@@ -47,8 +47,8 @@ const AddCardModal = ({ isOpen, onClose, onSubmit }) => {
               <Label htmlFor="cardName">Name on Card</Label>
               <Input
                 id="cardName"
-                name="cardName"
-                value={cardData.cardName}
+                name="owner_name"
+                value={cardData.owner_name}
                 onChange={handleChange}
                 required
               />
@@ -58,8 +58,8 @@ const AddCardModal = ({ isOpen, onClose, onSubmit }) => {
                 <Label htmlFor="expiry">Expiry Date</Label>
                 <Input
                   id="expiry"
-                  name="expiry"
-                  value={cardData.expiry}
+                  name="expiry_date"
+                  value={cardData.expiry_date}
                   onChange={handleChange}
                   placeholder="MM/YY"
                   required
@@ -78,14 +78,14 @@ const AddCardModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="cardType">Card Type</Label>
-              <Select name="cardType" onValueChange={(value) => handleChange({ target: { name: 'cardType', value } })}>
+              <Select name="type" onValueChange={(value) => handleChange({ target: { name: 'type', value } })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select card type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="visa">Visa</SelectItem>
-                  <SelectItem value="mastercard">Mastercard</SelectItem>
-                  <SelectItem value="amex">American Express</SelectItem>
+                  <SelectItem value="Visa">Visa</SelectItem>
+                  <SelectItem value="Mastercard">Mastercard</SelectItem>
+                  <SelectItem value="American Express">American Express</SelectItem>
                 </SelectContent>
               </Select>
             </div>
