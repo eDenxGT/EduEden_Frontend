@@ -570,7 +570,7 @@ const CoursePlayer = () => {
 						<div className="max-w-4xl mx-auto w-full p-6">
 							<div className="mb-6">
 								<h1 className="text-2xl font-bold mb-4">
-									{currentLecture?.title ?? "Course Finished"}
+									{currentLecture?.title ?? "Select Lecture to watch..."}
 								</h1>
 
 								<div className="flex flex-wrap items-center gap-6 mb-4">

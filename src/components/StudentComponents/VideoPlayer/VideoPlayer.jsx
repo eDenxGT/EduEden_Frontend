@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import ReactPlayer from 'react-player';
 import VideoControls from './VideoControls';
 import VideoHeader from './VideoHeader';
@@ -47,7 +47,7 @@ const VideoPlayer = () => {
           />
         </div>
 
-        <VideoHeader title="2. Sign up in Webflow" />
+        <VideoHeader title="" />
         <VideoViewers count={512} />
       </div>
     </div>

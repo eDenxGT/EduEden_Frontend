@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Footer from "../../components/MainComponents/TutorFooter";
 import { CallPopup } from "@/utils/VideoChat/CallPopup";
 import VideoCall from "@/utils/VideoChat/PopupVideoCalll";
+import Chatbot from "@/utils/ChatBot";
 
 const TutorLayout = () => {
   const role = "tutor";
@@ -11,7 +12,8 @@ const TutorLayout = () => {
       <Header role={role} />
       <Outlet />
       <Footer role={role} />
-      <CallPopup role="student" />
+      <Chatbot role={role} />
+      <CallPopup />
       <VideoCall />
     </>
   );
