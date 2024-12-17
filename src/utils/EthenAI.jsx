@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, Smile, Loader2 } from 'lucide-react';
+import { MessageCircle, X, Send, Smile, Loader2 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
+import { axiosInstance } from "@/api/axiosConfig";
 
-const EthenAI = ({ role = "Student" }) => {
+const EthenAI = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -12,7 +13,7 @@ const EthenAI = ({ role = "Student" }) => {
   const chatRef = useRef(null);
   const inputRef = useRef(null);
 
-  const MAX_MESSAGE_LENGTH = 100
+  const MAX_MESSAGE_LENGTH = 100;
 
   useEffect(() => {
     setMessages([
@@ -44,21 +45,37 @@ const EthenAI = ({ role = "Student" }) => {
 
   const toggleChat = () => setIsOpen(!isOpen);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputMessage.trim()) {
-      setMessages([...messages, { text: inputMessage, isUser: true }]);
+      const userMessage = inputMessage;
+      setMessages([...messages, { text: userMessage, isUser: true }]);
       setInputMessage("");
       setIsLoading(true);
-      setTimeout(() => {
+
+      try {
+        const response = await axiosInstance.post("/chats/ethen-ai", {
+          message: userMessage,
+        });
+console.log(response)
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch chatbot response");
+        }
+
+        const data = response.data;
+
         setMessages((prevMessages) => [
           ...prevMessages,
-          {
-            text: "I'm processing your request. Please wait a moment.",
-            isUser: false,
-          },
+          { text: data.reply, isUser: false },
         ]);
+      } catch (error) {
+        console.error("Error fetching chatbot response:", error.message);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: "Something went wrong. Please try again.", isUser: false },
+        ]);
+      } finally {
         setIsLoading(false);
-      }, 1000);
+      }
     }
   };
 
@@ -95,10 +112,10 @@ const EthenAI = ({ role = "Student" }) => {
 
   const renderMessage = (message, index) => {
     const isLink = message.text.match(/https?:\/\/[^\s]+/);
-    const formattedText = message.text.split('\n').map((line, i) => (
+    const formattedText = message.text.split("\n")?.map((line, i) => (
       <React.Fragment key={i}>
         {line}
-        {i !== message.text.split('\n').length - 1 && <br />}
+        {i !== (message.text.split("\n").length - 1) && <br />}
       </React.Fragment>
     ));
 
@@ -118,16 +135,16 @@ const EthenAI = ({ role = "Student" }) => {
         >
           {isLink ? (
             <div className="flex flex-col">
-              <span>{message.text.split(/https?:\/\/[^\s]+/)[0]}</span>
+              <span>{message?.text?.split(/https?:\/\/[^\s]+/)[0]}</span>
               <a
-                href={message.text.match(/https?:\/\/[^\s]+/)[0]}
+                href={message?.text?.match(/https?:\/\/[^\s]+/)[0]}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`underline break-all ${
                   message.isUser ? "text-orange-100" : "text-orange-600"
                 }`}
               >
-                {message.text.match(/https?:\/\/[^\s]+/)[0]}
+                {message?.text?.match(/https?:\/\/[^\s]+/)[0]}
               </a>
             </div>
           ) : (
@@ -206,7 +223,7 @@ const EthenAI = ({ role = "Student" }) => {
                     <div className="bg-white border border-gray-200 rounded-lg shadow-lg">
                       <EmojiPicker
                         onEmojiClick={handleEmojiClick}
-                        width={window.innerWidth < 768 ? 250 : 280}
+                        width={window.innerWidth < 768 ? 255 : 280}
                         height={400}
                       />
                     </div>
@@ -238,4 +255,3 @@ const EthenAI = ({ role = "Student" }) => {
 };
 
 export default EthenAI;
-
