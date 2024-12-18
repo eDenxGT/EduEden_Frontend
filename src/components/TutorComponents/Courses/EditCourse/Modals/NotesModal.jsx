@@ -11,7 +11,7 @@ const NotesModal = ({ isOpen, onClose, lectureId }) => {
 	const dispatch = useDispatch();
 
 	const selectedLecture = lectures.find(
-		(lecture) => lecture._id === lectureId
+		(lecture) => lecture.lecture_id === lectureId
 	);
 
 	if (!isOpen) return null;
@@ -107,7 +107,7 @@ const NotesModal = ({ isOpen, onClose, lectureId }) => {
 							</p>
 							{selectedLecture.pdf_notes && (
 								<p className="text-sm text-gray-600">
-									Selected: {selectedLecture.pdf_notes.name}
+									Selected: {selectedLecture?.pdf_notes?.name}
 								</p>
 							)}
 						</div>

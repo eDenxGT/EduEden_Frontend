@@ -45,51 +45,66 @@ const PublishCoursePage = ({ isDarkMode }) => {
 
   const validateCourseDetails = (courseDetails, lectures) => {
     const errors = [];
-    if (!courseDetails.title) errors.push("Please provide a course title");
-    if (!courseDetails.course_description)
+
+    const isNonEmptyString = (value) =>
+      typeof value === "string" && value.trim() !== "";
+
+    const isFileOrString = (file) => {
+      if (file instanceof File) return true;
+      //   if (typeof file === "string") return file.trim() !== "";
+      return false;
+    };
+
+    if (!isNonEmptyString(courseDetails.title))
+      errors.push("Please provide a valid course title");
+    if (!isNonEmptyString(courseDetails.course_description))
       errors.push("Please enter a valid course description");
-    if (!courseDetails.price || courseDetails.price <= 0)
+    if (
+      !courseDetails.price ||
+      isNaN(courseDetails.price) ||
+      courseDetails.price <= 0
+    )
       errors.push("Please enter a valid price");
-    if (!courseDetails.language) errors.push("Please select a language");
-    if (!courseDetails.category) errors.push("Please select a category");
-    if (!courseDetails.level) errors.push("Please select a level");
-    if (!courseDetails.duration) errors.push("Please enter a valid duration");
+    if (!isNonEmptyString(courseDetails.language))
+      errors.push("Please select a valid language");
+    if (!isNonEmptyString(courseDetails.category))
+      errors.push("Please select a valid category");
+    if (!isNonEmptyString(courseDetails.level))
+      errors.push("Please select a valid level");
+    if (!isNonEmptyString(courseDetails.duration))
+      errors.push("Please enter a valid duration");
+
     if (
       !courseDetails.course_thumbnail ||
-      !(courseDetails.course_thumbnail instanceof File) ||
-      !courseDetails.course_thumbnail.size 
+      !isFileOrString(courseDetails.course_thumbnail)
     ) {
-      errors.push("Please upload a course thumbnail");
+      errors.push("Please upload a valid course thumbnail or URL");
+    }
+
+    if (!lectures || lectures.length === 0) {
+      errors.push("At least one lecture is required");
     }
 
     lectures.forEach((lecture, index) => {
-      if (
-        !lecture.video ||
-        !(lecture.video instanceof File) ||
-        !lecture.video.size
-      ) {
-        errors.push(`Lecture ${index + 1}: Video is missing`);
+      if (!isNonEmptyString(lecture.title))
+        errors.push(`Lecture ${index + 1}: Title is missing or invalid`);
+
+      if (!isNonEmptyString(lecture.description))
+        errors.push(`Lecture ${index + 1}: Description is missing or invalid`);
+
+      if (!lecture.video || !isFileOrString(lecture.video)) {
+        errors.push(`Lecture ${index + 1}: Video is missing or invalid`);
       }
 
-      if (!lecture.title) errors.push(`Lecture ${index + 1}: Title is missing`);
-
-      if (!lecture.description)
-        errors.push(`Lecture ${index + 1}: Description is missing`);
-
-      if (
-        !lecture.pdf_notes ||
-        !(lecture.pdf_notes instanceof File) ||
-        !lecture.pdf_notes.size
-      ) {
-        errors.push(`Lecture ${index + 1}: Notes are missing`);
+      if (!lecture.pdf_notes || !isFileOrString(lecture.pdf_notes)) {
+        errors.push(`Lecture ${index + 1}: Notes are missing or invalid`);
       }
 
       if (
         !lecture.video_thumbnail ||
-        !(lecture.video_thumbnail instanceof File) ||
-        !lecture.video_thumbnail.size
+        !isFileOrString(lecture.video_thumbnail)
       ) {
-        errors.push(`Lecture ${index + 1}: Thumbnail is missing`);
+        errors.push(`Lecture ${index + 1}: Thumbnail is missing or invalid`);
       }
     });
 
@@ -101,7 +116,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
     const errors = validateCourseDetails(courseDetails, lectures);
 
     if (errors.length) {
-      errors.forEach((err) => hotToast.error(err));
+      hotToast.error(errors[0]);
       return;
     }
 
@@ -151,7 +166,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
           <InputField
             icon={<BookOpenText size={18} />}
             label="Title"
-            value={formData?.title}
+            defaultValue={formData?.title}
             className={`${
               isDarkMode
                 ? "bg-gray-700 border-gray-600 text-white"
@@ -168,7 +183,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
               className="absolute left-2.5 top-7 text-gray-400"
             />
             <textarea
-              value={formData?.course_description}
+              defaultValue={formData?.course_description}
               className={`${
                 isDarkMode
                   ? "bg-gray-700 border-gray-600 text-white"
@@ -181,7 +196,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
             <InputField
               icon={<Layers3 size={18} />}
               label="Course Category"
-              value={formData?.category}
+              defaultValue={formData?.category}
               className={`${
                 isDarkMode
                   ? "bg-gray-700 border-gray-600 text-white"
@@ -192,7 +207,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
             <InputField
               label="Course Language"
               icon={<LanguagesIcon size={16} />}
-              value={formData?.language}
+              defaultValue={formData?.language}
               className={`${
                 isDarkMode
                   ? "bg-gray-700 border-gray-600 text-white"
@@ -203,7 +218,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
             <InputField
               label="Course Level"
               icon={<Settings2 size={16} />}
-              value={formData?.level}
+              defaultValue={formData?.level}
               className={`${
                 isDarkMode
                   ? "bg-gray-700 border-gray-600 text-white"
@@ -214,7 +229,7 @@ const PublishCoursePage = ({ isDarkMode }) => {
             <InputField
               label="Number of Lectures"
               icon={<LucideCaptions size={18} />}
-              value={formData?.lectures.length}
+              defaultValue={formData?.lectures.length}
               className={`${
                 isDarkMode
                   ? "bg-gray-700 border-gray-600 text-white"

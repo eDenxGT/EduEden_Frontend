@@ -23,7 +23,7 @@ const BasicInformationPage = ({ goToNextPage, isDarkMode }) => {
 
 	const handleCancelEdit = async () => {
 		try {
-			await dispatch(resetFormData()).unwrap();
+			dispatch(resetFormData())
 		} catch (error) {
 			console.error("Error resetting form data:", error);
 		} finally {

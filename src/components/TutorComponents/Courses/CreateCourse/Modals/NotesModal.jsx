@@ -45,7 +45,7 @@ const NotesModal = ({ isOpen, onClose, lectureId }) => {
 		const file = e.dataTransfer.files[0];
 		if (file) {
 			dispatch(
-				updateLecture({ lectureId, updatedData: { pdf_notes: file } })
+				updateLecture({ lectureId, updatedData: { lecture_note: file } })
 			);
 		}
 	};

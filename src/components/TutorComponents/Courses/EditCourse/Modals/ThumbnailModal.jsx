@@ -8,7 +8,7 @@ const ThumbnailUploadModal = ({ isOpen, onClose, lectureId }) => {
 	const fileInputRef = useRef(null);
 	const lectures = useSelector((state) => state.updateCourse.lectures);
 	const selectedLecture = lectures.find(
-		(lecture) => lecture._id === lectureId
+		(lecture) => lecture.lecture_id === lectureId
 	);
 	const dispatch = useDispatch();
 

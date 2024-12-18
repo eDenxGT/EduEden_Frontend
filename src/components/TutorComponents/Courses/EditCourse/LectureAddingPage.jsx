@@ -93,7 +93,7 @@ const LectureAddingPage = ({ goToPreviousPage, goToNextPage, isDarkMode }) => {
 			<div className="space-y-4">
 				{lectures.map((lecture) => (
 					<div
-						key={lecture._id}
+						key={lecture.lecture_id}
 						className={`flex justify-between items-center border rounded-none ${
 							isDarkMode
 								? "bg-gray-800 border-gray-700"
@@ -106,7 +106,7 @@ const LectureAddingPage = ({ goToPreviousPage, goToNextPage, isDarkMode }) => {
 							}`}
 							value={lecture.title}
 							onChange={(e) =>
-								handleLectureTitleChange(e, lecture._id)
+								handleLectureTitleChange(e, lecture.lecture_id)
 							}
 						/>
 						<div className="flex space-x-2 items-center">
@@ -119,7 +119,7 @@ const LectureAddingPage = ({ goToPreviousPage, goToNextPage, isDarkMode }) => {
 								]}
 								value=""
 								onChange={(option) =>
-									handleOptionChange(option, lecture._id)
+									handleOptionChange(option, lecture.lecture_id)
 								}
 								isDarkMode={isDarkMode}
 								placeholder="Contents"
@@ -128,7 +128,7 @@ const LectureAddingPage = ({ goToPreviousPage, goToNextPage, isDarkMode }) => {
 							/>
 
 							<button
-								onClick={() => handleDeleteLecture(lecture._id)}
+								onClick={() => handleDeleteLecture(lecture.lecture_id)}
 								className={`p-2 pr-4 rounded-full ${
 									isDarkMode
 										? "text-gray-400 hover:text-gray-300"

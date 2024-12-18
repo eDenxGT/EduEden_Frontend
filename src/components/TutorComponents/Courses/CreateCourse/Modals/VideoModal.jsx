@@ -205,7 +205,7 @@ const LectureVideoModal = ({ isOpen, onClose, lectureId }) => {
 					</div>
 				) : (
 					<div className="p-4 space-y-4">
-						<div>
+						{/* <div>
 							<div className="flex">
 								<input
 									type="text"
@@ -231,7 +231,7 @@ const LectureVideoModal = ({ isOpen, onClose, lectureId }) => {
 								OR
 							</span>
 							<div className="flex-grow border-t border-gray-300"></div>
-						</div>
+						</div> */}
 
 						<div>
 							<div className="flex">
