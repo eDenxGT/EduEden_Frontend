@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Star, Trash2, ShoppingBag } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '@/components/commonComponents/Button'
-import Card from '@/components/commonComponents/Card'
+import Button from '@/components/ui/button'
+import Card from '@/components/ui/card'
 import { removeFromCart } from '../../store/thunks/cartThunks';
 
 const CourseCart = () => {
