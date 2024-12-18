@@ -54,7 +54,7 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <span className="font-semibold">Status:</span>
-            <Badge className={`${getStatusColor(purchase.status)} text-white`}>
+            <Badge className={`${getStatusColor(purchase.status)} max-w-fit text-white`}>
               {purchase.status}
             </Badge>
           </div>

@@ -8,6 +8,7 @@ const getStatusColor = (status) => {
     case "approved":
       return "bg-green-500";
     case "rejected":
+    case "cancelled":
       return "bg-red-500";
     case "pending":
       return "bg-orange-500";
