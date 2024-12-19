@@ -28,7 +28,7 @@ const CertificateDownloader = forwardRef(({ studentName, courseName }, ref) => {
        });
  
        pdf.addImage(imgData, "PNG", 0, 0, 800, 600);
-       pdf.save("certificate.pdf");
+       pdf.save(`${studentName}'s ${courseName} certificate.pdf`);
      },
    }));
  

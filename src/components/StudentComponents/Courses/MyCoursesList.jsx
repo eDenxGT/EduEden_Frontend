@@ -1,13 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Search, BookOpen, RefreshCw } from 'lucide-react';
+import { Search, BookOpen, RefreshCw } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import CourseCard from "../../CommonComponents/CourseCard";
-import { CourseCardSkeleton } from "@/components/CommonComponents/CourseCardSkeleton";
+import { CourseCardSkeleton } from "@/components/CommonComponents/Skeletons/CourseCardSkeleton";
 import { getEnrolledCourses } from "@/api/backendCalls/course";
 import { getAllCategories } from "@/api/backendCalls/category";
 import { getAllTutorsForStudents } from "@/api/backendCalls/student";
@@ -36,9 +42,9 @@ const MyCourses = () => {
   const fetchItemsForFiltering = useCallback(async () => {
     try {
       const fetchedCategories = await getAllCategories("forFiltering");
-	  const fetchedTutors = await getAllTutorsForStudents("forFiltering");
+      const fetchedTutors = await getAllTutorsForStudents("forFiltering");
       setCategories(fetchedCategories);
-	  setTutors(fetchedTutors);
+      setTutors(fetchedTutors);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -48,21 +54,15 @@ const MyCourses = () => {
     fetchItemsForFiltering();
   }, [fetchItemsForFiltering]);
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isError,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ["enrolledCourses", searchTerm, sortBy, category, tutor],
-    queryFn: fetchCourses,
-    getNextPageParam: (lastPage, pages) => {
-		if (lastPage?.courses.length < 12) return undefined;
-		return pages?.length + 1;
-    },
-  });
+  const { data, fetchNextPage, hasNextPage, isFetching, isError, refetch } =
+    useInfiniteQuery({
+      queryKey: ["enrolledCourses", searchTerm, sortBy, category, tutor],
+      queryFn: fetchCourses,
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage?.courses.length < 12) return undefined;
+        return pages?.length + 1;
+      },
+    });
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -88,14 +88,14 @@ const MyCourses = () => {
     refetch();
   };
 
-  const courses = data?.pages.flatMap(page => page.courses) || [];
-  courses.map((course) => {
+  const courses = data?.pages.flatMap((page) => page.courses) || [];
+  courses?.map((course) => {
     course.category =
-      categories.find((category) => category.category_id === course.category_id)
-        ?.title || null;
+      categories?.find(
+        (category) => category?.category_id === course?.category_id
+      )?.title || null;
   });
   const totalEnrolled = data?.pages[0]?.total_enrolled_courses || 0;
-  
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -162,7 +162,7 @@ const MyCourses = () => {
             </SelectContent>
           </Select>
 
-		  <Select value={tutor} onValueChange={handleTutorChange}>
+          <Select value={tutor} onValueChange={handleTutorChange}>
             <SelectTrigger>
               <SelectValue placeholder="Tutor" />
             </SelectTrigger>
@@ -213,7 +213,9 @@ const MyCourses = () => {
               <CourseCard
                 key={course?.course_id}
                 course={course}
-                onClick={() => navigate(`/student/my-courses/${course?.course_id}`)}
+                onClick={() =>
+                  navigate(`/student/my-courses/${course?.course_id}`)
+                }
                 showProgress={true}
               />
             ))}
@@ -223,7 +225,9 @@ const MyCourses = () => {
 
       {courses.length === 0 && !isFetching && (
         <div className="text-center py-8 text-gray-600">
-          <p className="text-xl font-semibold mb-2">No enrolled courses found</p>
+          <p className="text-xl font-semibold mb-2">
+            No enrolled courses found
+          </p>
           <p>Try adjusting your search or filters</p>
         </div>
       )}
@@ -232,4 +236,3 @@ const MyCourses = () => {
 };
 
 export default MyCourses;
-

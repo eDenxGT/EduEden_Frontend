@@ -32,7 +32,7 @@ const QuizResult = () => {
 		const fetchQuizResult = async () => {
 			try {
 				setLoading(true);
-				const response = await axiosInstance(
+				const response = await axiosInstance.get(
 					`/quizzes/${course_id}/${quiz_id}/result`
 				);
 				const scoreNew = response?.data?.courseProgressData?.quiz_marks;

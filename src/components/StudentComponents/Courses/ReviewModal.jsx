@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
 import { Star, X } from 'lucide-react';
 import Button from "@/components/CommonComponents/Button";
 

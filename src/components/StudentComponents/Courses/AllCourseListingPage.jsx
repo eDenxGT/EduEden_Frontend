@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getAllTutorsForStudents } from "@/api/backendCalls/student";
 import { getAllCategories } from "@/api/backendCalls/category";
-import { CourseCardSkeleton } from "@/components/CommonComponents/CourseCardSkeleton";
+import { CourseCardSkeleton } from "@/components/CommonComponents/Skeletons/CourseCardSkeleton";
 
 const AllCourseListingPage = () => {
   const navigate = useNavigate();
@@ -54,21 +54,15 @@ const AllCourseListingPage = () => {
     fetchItemsForFiltering();
   }, [fetchItemsForFiltering]);
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isError,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ["listedCourses", searchTerm, sortBy, category, tutor],
-    queryFn: fetchCourses,
-    getNextPageParam: (lastPage, pages) => {
-      if (lastPage.length < 12) return undefined;
-      return pages.length + 1;
-    },
-  });
+  const { data, fetchNextPage, hasNextPage, isFetching, isError, refetch } =
+    useInfiniteQuery({
+      queryKey: ["listedCourses", searchTerm, sortBy, category, tutor],
+      queryFn: fetchCourses,
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage?.length < 12) return undefined;
+        return pages?.length + 1;
+      },
+    });
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -95,10 +89,11 @@ const AllCourseListingPage = () => {
   };
 
   const courses = data ? data?.pages?.flatMap((page) => page) : [];
-  courses.map((course) => {
+  courses?.map((course) => {
     course.category =
-      categories.find((category) => category.category_id === course.category_id)
-        ?.title || null;
+      categories?.find(
+        (category) => category?.category_id === course?.category_id
+      )?.title || null;
   });
 
   return (

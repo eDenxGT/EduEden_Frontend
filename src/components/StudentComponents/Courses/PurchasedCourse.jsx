@@ -11,36 +11,54 @@ import {
 } from "lucide-react";
 import Button from "@/components/CommonComponents/Button";
 import Card from "@/components/CommonComponents/Card";
-import { fetchCoursesByCourseId } from "../../../store/thunks/courseThunks";
 import { useParams, Link as RouterLink, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-// import { useLoading } from "../../../contexts/LoadingContext";
+import { CourseDetailsSkeleton } from "@/components/CommonComponents/Skeletons/CourseDetailsSkeleton";
+import { getCourseDetailsByCourseId } from "@/api/backendCalls/course";
+import CourseNotFound from "@/components/CommonComponents/CourseNotFound";
 
 const PurchasedCourseDetails = () => {
   const navigate = useNavigate();
   const [activeAccordion, setActiveAccordion] = useState(null);
   const { course_id } = useParams();
-  const  purchasedCourse = useSelector((state) => state.courses.course);
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
+  const [purchasedCourse, setPurchasedCourse] = useState(null);
 
   const toggleAccordion = (index) => {
     setActiveAccordion(activeAccordion === index ? null : index);
   };
 
-  useEffect(() => {
-    dispatch(fetchCoursesByCourseId(course_id));
-  }, [dispatch, course_id]);
-
-  const handleStartLecture = (lectureId) => {
-    navigate(`/student/my-courses/${course_id}/lecture/${lectureId}`);
+  const fetchCourseData = async () => {
+    setIsLoading(true);
+    try {
+      const courseData = await getCourseDetailsByCourseId(
+        course_id,
+        "studentPurchasedCourse",
+        "student"
+      );
+      setPurchasedCourse(courseData);
+    } catch (error) {
+      console.error("Error fetching course data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-//   if (loading) {
-//     return <div className="text-center py-12">Loading...</div>;
-//   }
+  useEffect(() => {
+    fetchCourseData();
+  }, [course_id]);
+
+  const handleStartLecture = (lectureId) => {
+    navigate(`/student/my-courses/${course_id}/lecture/${lectureId}`, {
+      state: { lectureId },
+    });
+  };
+
+  if (isLoading) {
+    return <CourseDetailsSkeleton />;
+  }
 
   if (!purchasedCourse) {
-    return <div className="text-center py-12">Course not found</div>;
+    return <CourseNotFound />;
   }
 
   return (
@@ -102,7 +120,7 @@ const PurchasedCourseDetails = () => {
                       ))}
                     </div>
                     <span className="font-semibold">
-                      {(purchasedCourse.average_rating).toFixed(1)}
+                      {purchasedCourse.average_rating.toFixed(1)}
                     </span>
                     <span className="text-gray-500">
                       ({purchasedCourse.ratings_count} Ratings)
@@ -118,7 +136,12 @@ const PurchasedCourseDetails = () => {
                   alt="Course preview"
                   className="w-full h-full object-cover"
                 />
-                <button className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-4">
+                <button
+                  onClick={() =>
+                    handleStartLecture(purchasedCourse.lectures[0].lecture_id)
+                  }
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-75 rounded-full p-4"
+                >
                   <Play className="w-12 h-12 text-orange-600" />
                 </button>
               </div>
@@ -161,7 +184,9 @@ const PurchasedCourseDetails = () => {
                                   ? "bg-green-500 text-white"
                                   : "bg-orange-500 text-white"
                               }`}
-                              onClick={() => handleStartLecture(lecture.lecture_id)}
+                              onClick={() =>
+                                handleStartLecture(lecture.lecture_id)
+                              }
                             />
                           </div>
                         </div>
@@ -217,9 +242,7 @@ const PurchasedCourseDetails = () => {
                     </li>
                     <li className="flex items-center gap-3 text-gray-600">
                       <FileText className="w-5 h-5" />
-                      <span>
-                        Free exercises file & downloadable resources
-                      </span>
+                      <span>Free exercises file & downloadable resources</span>
                     </li>
                     <li className="flex items-center gap-3 text-gray-600">
                       <FileText className="w-5 h-5" />
@@ -245,4 +268,3 @@ const PurchasedCourseDetails = () => {
 };
 
 export default PurchasedCourseDetails;
-
