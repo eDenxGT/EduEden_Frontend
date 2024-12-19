@@ -29,7 +29,7 @@ export default function NotFoundPage() {
           {/* Right Content */}
           <div className=" flex justify-center items-center ">
             <img
-              src="/Error404.png"
+              src="/image/Error404.png"
               alt="404 illustration with character"
               className="w-full max-w-xl"
             />

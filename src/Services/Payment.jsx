@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 import { axiosInstance } from "../api/axiosConfig";
 import { useRazorpay } from "react-razorpay";
-import EduEdenLogo from "/EduEden.png";
+import EduEdenLogo from "/image/EduEden.png";
 import { useDispatch } from "react-redux";
 import { getStudentDetails } from "../store/thunks/studentThunks";
 import { useRef } from "react";
