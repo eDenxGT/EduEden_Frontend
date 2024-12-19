@@ -12,14 +12,31 @@ export const getAllCourses = async (apiFor) => {
   }
 };
 
-export const getListedCourses = async (apiFor) => {
+export const getListedCourses = async ({
+  search,
+  sort,
+  category,
+  page,
+  tutor,
+  limit,
+}) => {
   try {
-    const response = await axiosInstance.get(
-      `/courses/get-listed?apiFor=${apiFor}`
-    );
+    const response = await axiosInstance.get(`/courses/get-listed`, {
+      params: {
+        search,
+        sort,
+        category,
+        page,
+        tutor,
+        limit,
+      },
+    });
+    console.log(response)
     return response.data.courses;
   } catch (error) {
-    console.error(`Error fetching listed courses for ${apiFor}:`, error);
+    console.error("Error fetching listed courses:", error);
     return null;
   }
 };
+
+// export const getAllAvailableTutors

@@ -17,7 +17,6 @@ const CourseCard = ({
 	const moreButtonRef = useRef(null);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
 	const menuOptions = {
 		student: [
 			{
@@ -54,7 +53,7 @@ const CourseCard = ({
 				action: () => deleteCourseById(course?.course_id),
 			},
 			{
-				label: course.is_listed ? "Unlist Course" : "List Course",
+				label: course?.is_listed ? "Unlist Course" : "List Course",
 				action: () => {
 					dispatch(handleCourseStatus(course?.course_id));
 				},
@@ -92,13 +91,13 @@ const CourseCard = ({
 	return (
 		<div
 			onClick={onCardClick}
-			className={`flex flex-col rounded-none ${
+			className={`flex flex-col shadow-md rounded-none ${
 				isDarkMode ? "bg-gray-800" : "bg-white"
 			}`}>
 			<div className="relative h-48">
 				<img
 					src={course?.course_thumbnail}
-					alt={course.title}
+					alt={course?.title}
 					className="w-full h-full object-cover"
 				/>
 			</div>
@@ -108,7 +107,7 @@ const CourseCard = ({
 						className={`text-xs font-semibold uppercase  ${
 							isDarkMode ? "text-blue-400" : "text-blue-600"
 						}`}>
-						{course.category ?? course?.category_id?.title}
+						{course?.category ?? course?.category_id?.title}
 					</div>
 					<div className="text-sm text-[#FF5722] font-bold">
 						₹ {course?.price?.toFixed(2)}
@@ -118,7 +117,7 @@ const CourseCard = ({
 					className={`text-sm font-medium leading-snug mb-2 flex-grow ${
 						isDarkMode ? "text-white" : "text-gray-800"
 					}`}>
-					{course.title}
+					{course?.title}
 				</h3>
 				{/* <hr className="mb-3 mt-1"/> */}
 				<div className="flex items-center  justify-between text-xs mb-2">
@@ -131,9 +130,9 @@ const CourseCard = ({
 										? "text-gray-300"
 										: "text-gray-500"
 								}`}>
-								{(course.average_rating === 0
+								{(course?.average_rating === 0
 									? 0
-									: course.average_rating.toFixed(1)) ?? 0}
+									: course?.average_rating.toFixed(1)) ?? 0}
 							</span>
 						</div>
 						<div className="flex items-center ml-2">
@@ -144,7 +143,7 @@ const CourseCard = ({
 										? "text-gray-300"
 										: "text-gray-500"
 								}`}>
-								{course.enrolled_count} students
+								{course?.enrolled_count} students
 							</span>
 						</div>
 					</div>
@@ -177,7 +176,7 @@ const CourseCard = ({
 												? "text-gray-200 hover:bg-gray-600 hover:text-white"
 												: "text-gray-700 hover:bg-orange-500 hover:text-white"
 										}`}>
-										{option.label}
+										{option?.label}
 									</button>
 								))}
 							</div>
