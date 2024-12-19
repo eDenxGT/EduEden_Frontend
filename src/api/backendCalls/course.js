@@ -31,7 +31,6 @@ export const getListedCourses = async ({
         limit,
       },
     });
-    console.log(response)
     return response.data.courses;
   } catch (error) {
     console.error("Error fetching listed courses:", error);
@@ -39,4 +38,32 @@ export const getListedCourses = async ({
   }
 };
 
+export const getEnrolledCourses = async ({
+  search,
+  sort,
+  category,
+  tutor,
+  page,
+  limit,
+}) => {
+  try {
+    const response = await axiosInstance.get(`/student/get-enrolled-courses`, {
+      params: {
+        search,
+        sort,
+        category,
+        tutor,
+        page,
+        limit,
+      },
+    });
+    return {
+      courses: response.data.courses,
+      total_enrolled_courses: response.data.total_enrolled_courses,
+    };
+  } catch (error) {
+    console.error("Error fetching enrolled courses:", error);
+    return null;
+  }
+};
 // export const getAllAvailableTutors

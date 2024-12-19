@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Search, BookOpen, RefreshCw } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
 import CourseCard from "../../CommonComponents/CourseCard";
 import { useNavigate } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getAllTutorsForStudents } from "@/api/backendCalls/student";
 import { getAllCategories } from "@/api/backendCalls/category";
 import { CourseCardSkeleton } from "@/components/CommonComponents/CourseCardSkeleton";
@@ -59,7 +58,6 @@ const AllCourseListingPage = () => {
     data,
     fetchNextPage,
     hasNextPage,
-    isLoading,
     isFetching,
     isError,
     refetch,
