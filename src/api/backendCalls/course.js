@@ -80,6 +80,51 @@ export const getCourseDetailsByCourseId = async (course_id, apiFor, role) => {
   }
 };
 
+export const getCoursesByTutorId = async ({
+  search,
+  sort,
+  category,
+  page = 1,
+  listing_status,
+  tutor_id,
+  limit = 12,
+}) => {
+  try {
+    const response = await axiosInstance.get(
+      `/courses/my-courses/${tutor_id}`,
+      {
+        params: {
+          search,
+          sort,
+          category,
+          page,
+          listing_status,
+          limit,
+        },
+      }
+    );
+    console.log(response);
+    return {
+      courses: response?.data?.courses || [],
+      total: response?.data?.total || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching courses by tutor ID:", error);
+    return { courses: [], total: 0 };
+  }
+};
+
+export const deleteCourseById = async (course_id) => {
+  try {
+    const response = await axiosInstance.delete(`/courses/delete/${course_id}`);
+    return response?.data?.course;
+  } catch (error) {
+    console.log(error?.response?.data?.message || "Failed to delete course.");
+    return null;
+  }
+};
+
+//* ================= Course Progress Section ================= *//
 export const fetchCourseProgressByStudentId = async ({
   student_id,
   course_id,

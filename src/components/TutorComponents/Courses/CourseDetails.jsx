@@ -1,441 +1,212 @@
-import { useEffect } from "react";
-import {
-	Clock,
-	Users,
-	FileText,
-	Globe,
-	Star,
-	MoreVertical,
-	Calendar,
-	BookOpen,
-	Clock3,
-} from "lucide-react";
-import Card from "../../../components/CommonComponents/Card";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { fetchCoursesByCourseId } from "../../../store/thunks/courseThunks";
 import moment from "moment";
-import LoadingUi from "../../../utils/Modals/LoadingUiWithText";
-import { useLoading } from "../../../contexts/LoadingContext";
+import { CourseDetailsSkeleton } from "@/components/CommonComponents/Skeletons/CourseDetailsSkeleton";
+import { getCourseDetailsByCourseId } from "@/api/backendCalls/course";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { BookOpen, Calendar, Clock, FileText, Globe, MoreVertical, Star, Users } from 'lucide-react';
+import { StatCard } from "@/components/CommonComponents/CourseDetailsStatCard";
 
 const CourseDetails = () => {
-	const dispatch = useDispatch();
-  const navigate = useNavigate()
-	const isDarkMode = useSelector((state) => state.tutor.toggleTheme);
-	const { course } = useSelector((state) => state.courses);
-	const { course_id } = useParams();
-	console.log("Courses state:", course);
-	const { startLoading, stopLoading, loading } = useLoading();
+  const navigate = useNavigate();
+  const isDarkMode = useSelector((state) => state.tutor.toggleTheme);
+  const { course_id } = useParams();
+  const [courseData, setCourseData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-	const storedCourseDetails =
-		course?.course_id === course_id && course?.lectures ? course : null;
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      setLoading(true);
+      try {
+        const course = await getCourseDetailsByCourseId(
+          course_id,
+          "tutorCourseDetails",
+          "tutor"
+        );
+        setCourseData(course);
+      } catch (error) {
+        console.error("Error fetching course data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-	useEffect(() => {
-		startLoading();
-		const fetchCourseData = async () => {
-			if (!storedCourseDetails) {
-				await dispatch(fetchCoursesByCourseId(course_id)).unwrap();
-			}
-		};
+    fetchCourseData();
+  }, [course_id]);
 
-		fetchCourseData();
-		stopLoading();
-	}, []);
+  if (loading) {
+    return <CourseDetailsSkeleton />;
+  }
 
-	if (loading) {
-		return <LoadingUi text={"Course Details Loading"} />;
-	}
+  const price = courseData?.price || 0;
 
-	if (!storedCourseDetails) {
-		return <LoadingUi text={"Course Details Loading"} />;
-	}
+  return (
+    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}>
+      <div className="container mx-auto px-4 py-8">
+        {/* Breadcrumb */}
+        <nav className="text-sm mb-6">
+          <ol className="flex items-center space-x-2">
+            <li>
+              <Link to="/tutor/my-courses" className="hover:underline text-[#ff5722]">
+                My Courses
+              </Link>
+            </li>
+            <li className="text-gray-500">/</li>
+            <li>{courseData?.title}</li>
+          </ol>
+        </nav>
 
-	const courseData = storedCourseDetails;
-
-	const price = courseData?.price;
-
-	return (
-		<div
-			className={`min-h-screen ${
-				isDarkMode
-					? "bg-gray-900 text-white"
-					: "bg-gray-50 text-gray-900"
-			}`}>
-			<div className="max-w-7xl mx-auto px-4 py-8">
-				{/* Breadcrumb */}
-				<nav className="text-sm mb-6">
-					<ol className="flex items-center space-x-2">
-						<Link to={"/tutor/my-courses"}>
-							<span>My Courses</span>
-						</Link>
-						<span className="text-gray-500">/</span>
-						<Link to={`/tutor/my-courses/${courseData?.course_id}`}>
-							<span>{courseData?.title}</span>
-						</Link>
-					</ol>
-				</nav>
-
-				{/* Main Content */}
-				<Card
-					className={`rounded-none ${
-						isDarkMode ? "bg-gray-800" : "bg-white"
-					} p-6 mb-8`}>
-					<div className="flex flex-col md:flex-row gap-8">
-						<div className="md:w-1/3">
-							<img
-								src={courseData?.course_thumbnail}
-								alt={courseData?.title}
-								className="w-full rounded-none"
-							/>
-						</div>
-						<div className="md:w-2/3">
-							<div className="flex justify-between items-start">
-								<div>
-									<p className="text-sm text-gray-500">
-										Uploaded:{" "}
-										{moment(courseData?.created_at).format(
-											"MMM DD, YYYY"
-										)}{" "}
-										• Last Updated:{" "}
-										{moment(courseData?.updated_at).format(
-											"MMM DD, YYYY"
-										)}
-									</p>
-									<h1 className="text-2xl font-bold mt-2 mb-4">
-										{courseData?.title}
-									</h1>
-									<p className="text-gray-500 mb-4">
-										{courseData?.course_description}
-									</p>
-
-									<div className="flex items-center gap-4 mb-6">
-										<img
-											src={courseData?.tutor_avatar}
-											alt={courseData?.tutor_name}
-											className="w-10 h-10 rounded-full border-2 border-white"
-										/>
-										<div>
-											<p className="text-sm font-medium">
-												Created by:
-											</p>
-											<p className="text-sm text-gray-500">
-												{courseData?.tutor_name}
-											</p>
-										</div>
-									</div>
-								</div>
-								<button>
-									<MoreVertical className="w-6 h-6 text-gray-400" />
-								</button>
-							</div>
-
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-2">
-									<div className="flex items-center">
-										<Star
-											size={18}
-											color={"#FF5722"}
-											className="text-orange-500"
-										/>
-									</div>
-									<span className="font-bold">
-										{courseData?.average_rating || 0}
-									</span>
-									<span className="text-gray-500">
-										({courseData?.ratings_count || 0}{" "}
-										Ratings)
-									</span>
-								</div>
-								<div className="flex items-center gap-4">
-									<div>
-										<p className="text-sm text-gray-500">
-											Course price
-										</p>
-										<p className="text-xl font-bold">
-											${price.toFixed(2)}
-										</p>
-									</div>
-									<div>
-										<p className="text-sm text-gray-500">
-											Total revenue
-										</p>
-										<p className="text-xl font-bold">
-											$
-											{(
-												courseData?.enrolled_count *
-												price
-											).toFixed(2)}
-										</p>
-									</div>
-									<button className="px-4 py-2 bg-orange-500 text-white rounded-none hover:bg-orange-600">
-										Withdraw Money
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</Card>
-
-				{/* Stats Grid - Updated Design */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-					{/* Lecture Card */}
-					<div
-						className={`p-6 border rounded-xl ${
-							isDarkMode
-								? "bg-gray-800 border-gray-700"
-								: "bg-white border-gray-200"
-						}`}>
-						<div className="flex items-start gap-4">
-							<div
-								className={`p-3 ${
-									isDarkMode ? "bg-red-900" : "bg-red-50"
-								} rounded-xl`}>
-								<BookOpen className="w-6 h-6 text-red-500" />
-							</div>
-							<div>
-								<h3 className="text-xl font-bold">
-									{courseData?.lectures?.length}
-								</h3>
-								<div className="flex items-center gap-1">
-									<p className="text-sm text-gray-500">
-										Lectures
-									</p>
-									{/* <span className="text-xs text-gray-400">()</span> */}
-								</div>
-							</div>
-						</div>
-					</div>
-
-					{/* Comments Card */}
-					<div
-						className={`p-6 border rounded-xl ${
-							isDarkMode
-								? "bg-gray-800 border-gray-700"
-								: "bg-white border-gray-200"
-						}`}>
-						<div className="flex items-start gap-4">
-							<div
-								className={`p-3 ${
-									isDarkMode ? "bg-blue-900" : "bg-blue-50"
-								} rounded-xl`}>
-								<Star className="w-6 h-6 text-blue-500" />
-							</div>
-							<div>
-								<h3 className="text-xl font-bold">
-									{courseData?.ratings_count || "0"}
-								</h3>
-								<p className="text-sm text-gray-500">
-									Total Ratings
-								</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Students Enrolled Card */}
-					<div
-						className={`p-6 border rounded-xl ${
-							isDarkMode
-								? "bg-gray-800 border-gray-700"
-								: "bg-white border-gray-200"
-						}`}>
-						<div className="flex items-start gap-4">
-							<div
-								className={`p-3 ${
-									isDarkMode ? "bg-red-900" : "bg-red-50"
-								} rounded-xl`}>
-								<Users className="w-6 h-6 text-red-500" />
-							</div>
-							<div>
-								<h3 className="text-xl font-bold">
-									{courseData?.enrolled_count}
-								</h3>
-								<p className="text-sm text-gray-500">
-									Students enrolled
-								</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Course Level Card */}
-					<div
-						className={`p-6 border rounded-xl ${
-							isDarkMode
-								? "bg-gray-800 border-gray-700"
-								: "bg-white border-gray-200"
-						}`}>
-						<div className="flex items-start gap-4">
-							<div
-								className={`p-3 ${
-									isDarkMode ? "bg-green-900" : "bg-green-50"
-								} rounded-xl`}>
-								<FileText className="w-6 h-6 text-green-500" />
-							</div>
-							<div>
-								<h3 className="text-xl font-bold">
-									{courseData?.level}
-								</h3>
-								<p className="text-sm text-gray-500">
-									Course level
-								</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Course Language Card */}
-					<div
-						className={`p-6 border rounded-xl ${
-							isDarkMode
-								? "bg-gray-800 border-gray-700"
-								: "bg-white border-gray-200"
-						}`}>
-						<div className="flex items-start gap-4">
-							<div
-								className={`p-3 ${
-									isDarkMode ? "bg-gray-700" : "bg-gray-100"
-								} rounded-xl`}>
-								<Globe className="w-6 h-6 text-gray-500" />
-							</div>
-							<div>
-								<h3 className="text-xl font-bold">
-									{courseData?.language}
-								</h3>
-								<p className="text-sm text-gray-500">
-									Course Language
-								</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Attach File Card */}
-					{/* <div className={`p-6 border rounded-xl ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
-            <div className="flex items-start gap-4">
-              <div className={`p-3 ${isDarkMode ? 'bg-orange-900' : 'bg-orange-50'} rounded-xl`}>
-                <FileBox className="w-6 h-6 text-orange-500" />
+        {/* Main Content */}
+        <Card className={`mb-8 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:w-1/3">
+                <img
+                  src={courseData?.course_thumbnail}
+                  alt={courseData?.title}
+                  className="w-full rounded-lg object-cover aspect-video"
+                />
               </div>
-              <div>
-                <h3 className="text-xl font-bold">{courseData.attachments_count || '142'}</h3>
-                <div className="flex items-center gap-1">
-                  <p className="text-sm text-gray-500">Attach File</p>
-                  <span className="text-xs text-gray-400">({courseData.attachments_size || '14.4 GB'})</span>
+              <div className="lg:w-2/3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      Uploaded: {moment(courseData?.created_at).format("MMM DD, YYYY")} •
+                      Last Updated: {moment(courseData?.updated_at).format("MMM DD, YYYY")}
+                    </p>
+                    <h1 className="text-3xl font-bold mt-2 mb-4">{courseData?.title}</h1>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">{courseData?.course_description}</p>
+
+                    <div className="flex items-center gap-4 mb-6">
+                      <img
+                        src={courseData?.tutor_avatar}
+                        alt={courseData?.tutor_name}
+                        className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700"
+                      />
+                      <div>
+                        <p className="text-sm font-medium">Created by:</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{courseData?.tutor_name}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => navigate(`/tutor/my-courses/edit/${course_id}`)}>
+                        Edit Course
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {/* Implement delete functionality */}}>
+                        Delete Course
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                    <span className="font-bold">{courseData?.average_rating || 0}</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      ({courseData?.ratings_count || 0} Ratings)
+                    </span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Course price</p>
+                      <p className="text-xl font-bold">${price.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Total revenue</p>
+                      <p className="text-xl font-bold">
+                        ${((courseData?.enrolled_count || 0) * price).toFixed(2)}
+                      </p>
+                    </div>
+                    <Button onClick={() => navigate("/tutor/earnings")} className="bg-[#ff5722] hover:bg-[#e64a19] text-white">
+                      Withdraw
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <Badge
+                    className={courseData?.is_listed ? "bg-green-500 text-white" : "bg-red-500 text-white"}
+                  >
+                    {courseData?.is_listed ? "Listed" : "Unlisted"}
+                  </Badge>
                 </div>
               </div>
             </div>
-          </div> */}
+          </CardContent>
+        </Card>
 
-					{/* Hours Card */}
-					<div
-						className={`p-6 border rounded-xl ${
-							isDarkMode
-								? "bg-gray-800 border-gray-700"
-								: "bg-white border-gray-200"
-						}`}>
-						<div className="flex items-start gap-4">
-							<div
-								className={`p-3 ${
-									isDarkMode
-										? "bg-purple-900"
-										: "bg-purple-50"
-								} rounded-xl`}>
-								<Clock3 className="w-6 h-6 text-purple-500" />
-							</div>
-							<div>
-								<h3 className="text-xl font-bold">
-									{courseData.duration || "19:37:51"}
-								</h3>
-								<p className="text-sm text-gray-500">
-									Course Duration
-								</p>
-							</div>
-						</div>
-					</div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <StatCard icon={BookOpen} title="Lectures" value={courseData?.lectures?.length || 0} />
+          <StatCard icon={Star} title="Total Ratings" value={courseData?.ratings_count || 0} />
+          <StatCard icon={Users} title="Students enrolled" value={courseData?.enrolled_count || 0} />
+          <StatCard icon={FileText} title="Course level" value={courseData?.level || "N/A"} />
+          <StatCard icon={Globe} title="Course Language" value={courseData?.language || "N/A"} />
+          <StatCard icon={Clock} title="Course Duration" value={courseData?.duration || "N/A"} />
+        </div>
 
-					{/* Students Viewed Card */}
-					{/* <div className={`p-6 border rounded-xl ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
-            <div className="flex items-start gap-4">
-              <div className={`p-3 ${isDarkMode ? 'bg-amber-900' : 'bg-amber-50'} rounded-xl`}>
-                <Trophy className="w-6 h-6 text-amber-500" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">{courseData.views_count || '76,395,167'}</h3>
-                <p className="text-sm text-gray-500">Students viewed</p>
-              </div>
-            </div>
-          </div> */}
-				</div>
-
-				{/* Lessons Preview - Updated Design */}
-				<div className="max-w-7xl mx-auto space-y-6">
-					{courseData?.lectures &&
-						courseData?.lectures.map((lesson, index) => (
-							<div
-								key={index}
-								className={`flex flex-col md:flex-row overflow-hidden rounded-none border ${
-									isDarkMode
-										? "bg-gray-800 border-gray-700"
-										: "bg-white border-gray-200"
-								} shadow-sm`}>
-								<div className="md:w-1/4 relative bg-[#FFD700]">
-									<img
-										src={lesson.video_thumbnail}
-										alt={lesson.title}
-										className="w-full h-full object- aspect-[4/3]"
-									/>
-								</div>
-
-								<div className="flex-1 p-6">
-									<h3
-										className={`text-2xl font-bold mb-4 ${
-											isDarkMode
-												? "text-white"
-												: "text-gray-900"
-										}`}>
-										{lesson.title}
-									</h3>
-
-									<div className="flex flex-wrap gap-6 mb-4">
-										<div className="flex items-center gap-2">
-											<Calendar className="w-5 h-5 text-gray-500" />
-											<span
-												className={`${
-													isDarkMode
-														? "text-gray-300"
-														: "text-gray-600"
-												}`}>
-												Date:{" "}
-												{moment(
-													lesson?.created_at
-												).format("MMM DD, YYYY")}
-											</span>
-										</div>
-										<div className="flex items-center gap-2">
-											<Clock className="w-5 h-5 text-gray-500" />
-											<span
-												className={`${
-													isDarkMode
-														? "text-gray-300"
-														: "text-gray-600"
-												}`}>
-												Duration: {lesson.duration}
-											</span>
-										</div>
-									</div>
-
-									<button
-										onClick={() =>
-											navigate(
-                        `/tutor/my-courses/${courseData.course_id}/lectures/${lesson?.lecture_id}`)
-										}
-										className="bg-[#FF5A1F] hover:bg-[
-#FF4500] text-white px-6 py-2 rounded-none font-semibold transition-colors">
-										View Lecture
-									</button>
-								</div>
-							</div>
-						))}
-				</div>
-			</div>
-		</div>
-	);
+        {/* Lessons Preview */}
+        <div className="space-y-6">
+          {courseData?.lectures?.map((lesson, index) => (
+            <Card key={index} className={isDarkMode ? "bg-gray-800" : "bg-white"}>
+              <CardContent className="p-0">
+                <div className="flex flex-col md:flex-row">
+                  <div className="md:w-1/4 relative bg-gray-200 dark:bg-gray-700">
+                    <img
+                      src={lesson.video_thumbnail}
+                      alt={lesson.title}
+                      className="w-full h-full object-cover aspect-video"
+                    />
+                  </div>
+                  <div className="flex-1 p-6">
+                    <h3 className="text-2xl font-bold mb-4">{lesson.title}</h3>
+                    <div className="flex flex-wrap gap-6 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Date: {moment(lesson?.created_at).format("MMM DD, YYYY")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Duration: {lesson.duration}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => navigate(`/tutor/my-courses/${courseData.course_id}/lectures/${lesson?.lecture_id}`)}
+                      className="bg-[#ff5722] hover:bg-[#e64a19] text-white"
+                    >
+                      View Lecture
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CourseDetails;
+
