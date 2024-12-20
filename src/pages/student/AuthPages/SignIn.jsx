@@ -82,10 +82,10 @@ const SignIn = () => {
         dispatch(studentLogin(data));
         localStorage.removeItem("isOtpModalOpen");
         localStorage.removeItem("formEmail");
-		socket.disconnect();
-		socket.auth.role = "student";
-		socket.auth.token = accessToken;
-		socket.connect();
+        socket.disconnect();
+        socket.auth.role = "student";
+        socket.auth.token = accessToken;
+        socket.connect();
         setTimeout(() => {
           navigate("/student/home");
         }, 1500);
@@ -161,17 +161,16 @@ const SignIn = () => {
 
   const onGoogleSignInSuccess = async (data) => {
     dispatch(studentLogin({ studentData: data.userData, token: data.token }));
-    // toast.success("Google sign-in was successful.");
     const accessToken = data?.accessToken;
     if (!accessToken) {
       throw new Error("Access token not provided in response.");
     }
     toast.success(data?.message);
     storeAccessToken("student", accessToken, 13);
-	socket.disconnect();
-	socket.auth.role = "student";
-	socket.auth.token = accessToken;
-	socket.connect();
+    socket.disconnect();
+    socket.auth.role = "student";
+    socket.auth.token = accessToken;
+    socket.connect();
     setTimeout(() => {
       navigate("/student/home");
     }, 1500);
@@ -183,7 +182,7 @@ const SignIn = () => {
 
   return (
     <>
-      <div className="flex justify-around items-center p-4 border-b border-gray-200">
+      <div className="flex justify-between items-center p-4 border-b border-gray-200">
         <div className="flex items-center">
           <PiGraduationCap className="h-6 w-6 text-[#ff5722]" />
           <span className="ml-2 text-xl font-semibold">
@@ -192,23 +191,23 @@ const SignIn = () => {
           </span>
         </div>
         <div className="text-sm">
-          Don&apos;t have an account?
+          <span className="hidden sm:inline">Don&apos;t have an account?</span>
           <button
             onClick={toSignUp}
-            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 ml-4 rounded"
+            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 ml-2 sm:ml-4 rounded text-xs sm:text-sm"
           >
             Create Account
           </button>
         </div>
       </div>
 
-      <div className="min-h-screen flex">
+      <div className="min-h-[calc(100vh-64px)] flex flex-col lg:flex-row">
         <div className="hidden lg:flex lg:w-1/2 bg-[#ebebff] items-center justify-center">
           <img src={BoyPcImage} alt="Illustration" className="max-w-[28rem]" />
         </div>
 
-        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
-          <div className="max-w-[28rem] w-full mx-auto">
+        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-4 py-8 lg:py-0">
+          <div className="max-w-[28rem] w-full">
             <h1 className="text-2xl font-bold text-gray-900 mb-3">
               Sign in to your account
             </h1>
@@ -219,7 +218,6 @@ const SignIn = () => {
                   <GoogleAuthButton
                     onSuccessRedirect={(data) => onGoogleSignInSuccess(data)}
                     role={"student"}
-                    // isDarkMode={isDarkMode}
                   />
                 </div>
                 <div className="flex items-center justify-center text-base font-semibold text-gray-600">
@@ -236,7 +234,7 @@ const SignIn = () => {
                   onChange={handleChange}
                 />
                 {errors.email && (
-                  <span className="text-xs text-red-600 absolute -bottom-4 left-">
+                  <span className="text-xs text-red-600 absolute -bottom-4 left-0">
                     {errors.email}
                   </span>
                 )}
@@ -258,8 +256,8 @@ const SignIn = () => {
                 )}
               </div>
               <div>
-                <div className="flex items-center justify-between mt-4">
-                  <label className="flex items-center text-gray-600">
+                <div className="flex flex-wrap items-center justify-between mt-4">
+                  <label className="flex items-center text-gray-600 mb-2 sm:mb-0">
                     <input
                       type="checkbox"
                       className="h-4 w-4 text-[#ff5722] border-gray-300 focus:ring-[#ff5722]"
@@ -271,7 +269,7 @@ const SignIn = () => {
                   </label>
                   <Link
                     to="/forgot-password?role=student"
-                    className="ml-2 hover:underline-offset-auto hover:underline text-[#ff5722] text-xs"
+                    className="hover:underline-offset-auto hover:underline text-[#ff5722] text-xs"
                   >
                     <span>Forgot Password?</span>
                   </Link>
@@ -280,7 +278,7 @@ const SignIn = () => {
                 <Button
                   type="submit"
                   text={isLoading ? "" : "Sign In"}
-                  className="flex items-center justify-center gap-2 shadow-md mt-2"
+                  className="flex items-center justify-center gap-2 shadow-md mt-4 w-full"
                   disabled={
                     !isFormValid ||
                     isLoading ||
@@ -311,3 +309,4 @@ const SignIn = () => {
 };
 
 export default SignIn;
+
