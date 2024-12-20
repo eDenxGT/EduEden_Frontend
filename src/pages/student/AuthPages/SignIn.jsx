@@ -76,19 +76,18 @@ const SignIn = () => {
         if (!accessToken) {
           throw new Error("Access token not provided in response.");
         }
-        toast.success(response?.data?.message);
+        toast.success("Login Successful");
         storeAccessToken("student", accessToken, 13);
         const data = response?.data;
         dispatch(studentLogin(data));
         localStorage.removeItem("isOtpModalOpen");
         localStorage.removeItem("formEmail");
+        localStorage.removeItem("otpTimestamp");
         socket.disconnect();
         socket.auth.role = "student";
         socket.auth.token = accessToken;
         socket.connect();
-        setTimeout(() => {
-          navigate("/student/home");
-        }, 1500);
+        navigate("/student/home");
       }
     } catch (error) {
       console.error("SignIn Submit Error:", error);
@@ -138,12 +137,11 @@ const SignIn = () => {
         toast.success(response?.data?.message);
         localStorage.removeItem("isOtpModalOpen");
         localStorage.removeItem("formEmail");
+        localStorage.removeItem("otpTimestamp");
 
         dispatch(studentLogin(response?.data));
         setOtpModalOpen(false);
-        setTimeout(() => {
-          navigate("/student/home");
-        }, 2000);
+        navigate("/student/home");
       }
     } catch (error) {
       toast.error(error?.response?.data?.message);
@@ -157,6 +155,7 @@ const SignIn = () => {
     setOtpModalOpen(false);
     localStorage.removeItem("isOtpModalOpen");
     localStorage.removeItem("formEmail");
+    localStorage.removeItem("otpTimestamp");
   };
 
   const onGoogleSignInSuccess = async (data) => {
@@ -171,9 +170,7 @@ const SignIn = () => {
     socket.auth.role = "student";
     socket.auth.token = accessToken;
     socket.connect();
-    setTimeout(() => {
-      navigate("/student/home");
-    }, 1500);
+    navigate("/student/home");
   };
 
   const toSignUp = () => {
@@ -309,4 +306,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-

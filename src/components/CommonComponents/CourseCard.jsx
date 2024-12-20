@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { MoreHorizontal, Star, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { handleCourseStatus } from "../../store/thunks/courseThunks";
 
 const CourseCard = ({
   course,
@@ -11,12 +10,12 @@ const CourseCard = ({
   isDarkMode = false,
   onClick,
   deleteCourseById,
+  handleCourseStatus
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const moreButtonRef = useRef(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const menuOptions = {
     student: [
       {
@@ -54,7 +53,7 @@ const CourseCard = ({
       {
         label: course?.is_listed ? "Unlist Course" : "List Course",
         action: () => {
-          dispatch(handleCourseStatus(course?.course_id));
+          handleCourseStatus(course?.course_id);
         },
       },
     ],
@@ -144,7 +143,7 @@ const CourseCard = ({
               >
                 {(course?.average_rating === 0
                   ? 0
-                  : course?.average_rating.toFixed(1)) ?? 0}
+                  : course?.average_rating?.toFixed(1)) ?? 0}
               </span>
             </div>
             <div className="flex items-center ml-2">

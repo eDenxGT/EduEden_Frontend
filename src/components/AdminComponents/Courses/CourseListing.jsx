@@ -1,75 +1,85 @@
-import { useState, useEffect } from "react";
-import { debounce } from "lodash";
-import CourseCard from "../../CommonComponents/CourseCard";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-import { deleteCourseById, fetchCourses } from "../../../store/thunks/courseThunks";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Search, RefreshCw } from 'lucide-react';
+import InfiniteScroll from "react-infinite-scroll-component";
+import CourseCard from "../../CommonComponents/CourseCard";
 import ConfirmationModal from "../../../utils/Modals/ConfirmtionModal";
-import SelectInputField from "../../CommonComponents/SelectInputField";
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { fetchCategories } from "../../../store/slices/categoriesSlice";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getAllCoursesForAdminSide, deleteCourseById, updateCourseStatus } from "@/api/backendCalls/course";
+import { getAllCategories } from "@/api/backendCalls/category";
+import { CourseCardSkeleton } from "@/components/CommonComponents/Skeletons/CourseCardSkeleton";
 
-const CourseListing = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+const AdminCourseListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredCourses, setFilteredCourses] = useState([]);
   const [sortBy, setSortBy] = useState("latest");
   const [category, setCategory] = useState("all");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const { courses } = useSelector((state) => state.courses);
-  const {categories} = useSelector(state=>state.categories)
-
-  const isDarkMode = useSelector(state => state.admin.toggleTheme);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const coursesPerPage = 4; 
+  const fetchCourses = async ({ pageParam = 1 }) => {
+    const response = await getAllCoursesForAdminSide({
+      search: searchQuery,
+      sort: sortBy,
+      category: category,
+      page: pageParam,
+      limit: 12,
+    });
+    return response;
+  };
 
-  useEffect(() => {
-    const fetchAllCourses = async () => {
-      try {
-        await dispatch(fetchCourses()).unwrap();
-      } catch (error) {
-        console.error("Fetch Enrolled Courses error:", error);
-        toast.error("Failed to load your courses. Please try again.");
-      }
-    };
-    fetchAllCourses();
-  }, [dispatch]);
-  useEffect(() => {
-    
-    setFilteredCourses(courses);
-  }, [courses])
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isError,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['adminCourses', searchQuery, sortBy, category],
+    queryFn: fetchCourses,
+    getNextPageParam: (lastPage, pages) => {
+      if (lastPage?.length < 12) return undefined;
+      return pages?.length + 1;
+    },
+  });
 
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getAllCategories,
+  });
 
-  const handleSearch = debounce((query) => {
-    const filtered = courses.filter((course) =>
-      course.title.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCourses(filtered);
-    setCurrentPage(1);
-  }, 300);
+  const courses = data ? data?.pages?.flatMap((page) => page) : [];
+  console.log(courses, data)
 
   const handleSearchInputChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    handleSearch(value);
+    setSearchQuery(e.target.value);
   };
 
   const handleSortChange = (value) => {
     setSortBy(value);
-    // Implement sorting logic here
   };
 
   const handleCategoryChange = (value) => {
     setCategory(value);
-    // Implement category filtering logic here
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setSortBy("latest");
+    setCategory("all");
+    refetch();
   };
 
   const onClose = () => {
@@ -77,11 +87,21 @@ const CourseListing = () => {
     setSelectedCourseId(null);
   };
 
+  const handleCourseStatus = async (course_id) => {
+    try {
+      console.log(course_id)
+      await updateCourseStatus(course_id);
+      refetch();
+    } catch (error) {
+      console.log("Update Course Status error : ", error);
+    }
+  };
+
   const onConfirm = async () => {
     try {
-      await dispatch(deleteCourseById(selectedCourseId)).unwrap();
+      await deleteCourseById(selectedCourseId);
       onClose();
-      navigate('/admin/courses');
+      refetch();
       toast.success("Course deleted successfully!");
     } catch (error) {
       console.log("Delete Course By Id error : ", error);
@@ -89,18 +109,7 @@ const CourseListing = () => {
     }
   };
 
-  const indexOfLastCourse = currentPage * coursesPerPage;
-  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
-  const currentCourses = (searchQuery ? filteredCourses : courses).slice(indexOfFirstCourse, indexOfLastCourse);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const primaryColor = isDarkMode
-    ? "bg-blue-600 hover:bg-blue-700"
-    : "bg-orange-500 hover:bg-orange-600";
-  const secondaryColor = isDarkMode
-    ? "bg-gray-700 hover:bg-gray-600"
-    : "bg-gray-200 hover:bg-gray-300";
+  const isDarkMode = false; 
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
@@ -108,117 +117,106 @@ const CourseListing = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
           <div className="relative w-full md:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
+            <Input
               type="text"
               placeholder="Search in your courses..."
-              className={`w-full md:w-64 pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                isDarkMode
-                  ? 'bg-gray-800 border-gray-700 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-              }`}
+              className="w-full md:w-64 pl-10"
               value={searchQuery}
               onChange={handleSearchInputChange}
             />
           </div>
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
-            <SelectInputField
-              options={["latest", "oldest", "price-low-high", "price-high-low"]}
-              value={sortBy}
-              onChange={handleSortChange}
-              placeholder="Sort By"
-              isDarkMode={isDarkMode}
-              className="w-full md:w-40"
-            />
-            <SelectInputField
-              options={categories.map((category) => category.title)}
-              value={category}
-              onChange={handleCategoryChange}
-              placeholder="Category"
-              isDarkMode={isDarkMode}
-              className="w-full md:w-40"
-            />
-            <SelectInputField
-              options={["4-star", "3-star", "2-star", "1-star"]}
-              value="4-star"
-              onChange={() => {}}
-              placeholder="Rating"
-              isDarkMode={isDarkMode}
-              className="w-full md:w-40"
-            />
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-full md:w-40">
+                <SelectValue placeholder="Sort By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest</SelectItem>
+                <SelectItem value="oldest">Oldest</SelectItem>
+                <SelectItem value="price_low_to_high">Price: Low to High</SelectItem>
+                <SelectItem value="price_high_to_low">Price: High to Low</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={category} onValueChange={handleCategoryChange}>
+              <SelectTrigger className="w-full md:w-40">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat._id} value={cat._id}>
+                    {cat.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={handleResetFilters}
+              variant="outline"
+              className="w-full md:w-auto"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Reset Filters
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {currentCourses.map((course) => (
-            <CourseCard
-              key={course.course_id}
-              onClick={() => navigate(`/admin/courses/${course.course_id}`)}
-              userRole="admin"
-              course={course}
-              deleteCourseById={(course_id) => {
-                setIsDeleteModalOpen(true);
-                setSelectedCourseId(course_id);
-              }}
-              isDarkMode={isDarkMode}
-            />
-          ))}
-        </div>
-
-        <div className="mt-8 flex justify-center items-center">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`mx-1 px-3 py-1 rounded-full flex items-center ${secondaryColor} ${
-              currentPage === 1
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
-          >
-            <ChevronLeft className="mr-2" /> Prev
-          </button>
-          {Array.from(
-            { length: Math.ceil(courses.length / coursesPerPage) },
-            (_, i) => {
-              if (
-                i === 0 ||
-                i === Math.ceil(courses.length / coursesPerPage) - 1 ||
-                (i >= currentPage - 2 && i <= currentPage)
-              ) {
-                return (
-                  <button
-                    key={i}
-                    onClick={() => paginate(i + 1)}
-                    className={`mx-1 w-8 h-8 rounded-full flex items-center justify-center ${
-                      currentPage === i + 1
-                        ? primaryColor + " text-white"
-                        : secondaryColor + (isDarkMode ? " text-white" : " text-gray-800")
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                );
-              } else if (i === currentPage - 3 || i === currentPage + 1) {
-                return (
-                  <span key={i} className="mx-1">
-                    ...
-                  </span>
-                );
-              }
-              return null;
+        {isFetching && courses.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(9)].map((_, index) => (
+              <CourseCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">
+            Error loading courses
+          </div>
+        ) : (
+          <InfiniteScroll
+            dataLength={courses?.length}
+            next={fetchNextPage}
+            hasMore={hasNextPage}
+            loader={
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
+                {[...Array(4)].map((_, index) => (
+                  <CourseCardSkeleton key={index} />
+                ))}
+              </div>
             }
-          )}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === Math.ceil(courses.length / coursesPerPage)}
-            className={`mx-1 px-3 py-1 rounded-full flex items-center ${secondaryColor} ${
-              currentPage === Math.ceil(courses.length / coursesPerPage)
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            endMessage={
+              courses.length > 0 && (
+                <div className="text-center py-4 text-gray-500">
+                  No more courses to load
+                </div>
+              )
+            }
           >
-            Next <ChevronRight className="ml-2" />
-          </button>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.isArray(courses) &&
+                courses?.map((course) => (
+                  <CourseCard
+                    key={course?.course_id}
+                    onClick={() => navigate(`/admin/courses/${course?.course_id}`)}
+                    userRole="admin"
+                    course={course}
+                    deleteCourseById={(course_id) => {
+                      setIsDeleteModalOpen(true);
+                      setSelectedCourseId(course_id);
+                    }}
+                    isDarkMode={isDarkMode}
+                    handleCourseStatus={handleCourseStatus}
+                  />
+                ))}
+            </div>
+          </InfiniteScroll>
+        )}
+
+        {courses.length === 0 && !isFetching && (
+          <div className="text-center py-8 text-gray-600">
+            <p className="text-xl font-semibold mb-2">No courses found</p>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        )}
       </main>
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
@@ -235,5 +233,5 @@ const CourseListing = () => {
   );
 };
 
-export default CourseListing;
+export default AdminCourseListing;
 

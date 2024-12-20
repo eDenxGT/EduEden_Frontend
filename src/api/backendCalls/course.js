@@ -110,7 +110,7 @@ export const getCoursesByTutorId = async ({
     };
   } catch (error) {
     console.error("Error fetching courses by tutor ID:", error);
-    return { courses: [], total: 0 };
+    return [];
   }
 };
 
@@ -120,6 +120,45 @@ export const deleteCourseById = async (course_id) => {
     return response?.data?.course;
   } catch (error) {
     console.log(error?.response?.data?.message || "Failed to delete course.");
+    return null;
+  }
+};
+
+export const getAllCoursesForAdminSide = async ({
+  search,
+  sort,
+  category,
+  page = 1,
+  listing_status,
+  limit = 12,
+}) => {
+  try {
+    const response = await axiosInstance.get(`/courses/get-all-for-admin`, {
+      params: {
+        search,
+        sort,
+        category,
+        page,
+        listing_status,
+        limit,
+      },
+    });
+    return response?.data?.courses || [];
+  } catch (error) {
+    console.error(
+      "Error fetching courses for admin:",
+      error?.response?.data?.message || "Failed to fetch course."
+    );
+    return [];
+  }
+};
+
+export const updateCourseStatus = async (course_id) => {
+  try {
+    const response = await axiosInstance.put(`/courses/status/${course_id}`);
+    return response?.data?.course;
+  } catch (error) {
+    console.error("Error updating course status:", error);
     return null;
   }
 };

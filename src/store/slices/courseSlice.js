@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
 	addCourse,
-	fetchCoursesByTutorId,
 	fetchCourses,
-	fetchListedCourses,
 	fetchCoursesByCourseId,
 	updateCourse,
 	deleteCourseById,
@@ -36,30 +34,6 @@ const courseSlice = createSlice({
 				state.courses.push(action.payload);
 			})
 			.addCase(addCourse.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload;
-			})
-			.addCase(fetchCoursesByTutorId.pending, (state) => {
-				state.loading = true;
-				state.error = null;
-			})
-			.addCase(fetchCoursesByTutorId.fulfilled, (state, action) => {
-				state.loading = false;
-				state.courses = action.payload;
-			})
-			.addCase(fetchCoursesByTutorId.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload;
-			})
-			.addCase(fetchListedCourses.pending, (state) => {
-				state.loading = true;
-				state.error = null;
-			})
-			.addCase(fetchListedCourses.fulfilled, (state, action) => {
-				state.loading = false;
-				state.courses = action.payload;
-			})
-			.addCase(fetchListedCourses.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.payload;
 			})

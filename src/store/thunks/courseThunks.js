@@ -42,23 +42,7 @@ const addCourse = createAsyncThunk(
 	}
 );
 
-const fetchCoursesByTutorId = createAsyncThunk(
-	"courses/fetchCoursesByTutorId",
-	async (tutor_id, { rejectWithValue }) => {
-		try {
-			const response = await axiosInstance.get(
-				`/courses/my-courses/${tutor_id}`
-			);
-			console.log(response);
 
-			return response?.data?.courses;
-		} catch (error) {
-			return rejectWithValue(
-				error?.response?.data?.message || "Failed to fetch courses."
-			);
-		}
-	}
-);
 
 const fetchCoursesByStudentId = createAsyncThunk(
 	"courses/fetchCoursesByStudentId",
@@ -83,20 +67,6 @@ const fetchCourses = createAsyncThunk(
 	async (_, { rejectWithValue }) => {
 		try {
 			const response = await axiosInstance.get("/courses/get-all");
-			return response?.data?.courses;
-		} catch (error) {
-			return rejectWithValue(
-				error?.response?.data?.message || "Failed to fetch courses."
-			);
-		}
-	}
-);
-
-const fetchListedCourses = createAsyncThunk(
-	"courses/fetchListedCourses",
-	async (_, { rejectWithValue }) => {
-		try {
-			const response = await axiosInstance.get("/courses/get-listed");
 			return response?.data?.courses;
 		} catch (error) {
 			return rejectWithValue(
@@ -261,8 +231,6 @@ const fetchCourseQuizByQuizId = createAsyncThunk(
 export {
 	addCourse,
 	fetchCourses,
-	fetchCoursesByTutorId,
-	fetchListedCourses,
 	fetchCoursesByCourseId,
 	updateCourse,
 	deleteCourseById,

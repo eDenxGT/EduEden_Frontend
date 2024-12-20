@@ -1,30 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { Clock, Users, FileText, Globe, Star, MoreVertical, Calendar, BookOpen, Clock3, ChevronLeft, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { fetchCoursesByCourseId, deleteCourseById, handleCourseStatus } from "@/store/thunks/courseThunks";
 import moment from "moment";
-import { toast } from "react-toastify";
-import Button from "@/components/CommonComponents/Button";
-import Card from "@/components/CommonComponents/Card";
+import { toast } from "sonner";
+import {
+  BookOpen,
+  Calendar,
+  Clock,
+  Edit,
+  Eye,
+  EyeOff,
+  FileText,
+  Globe,
+  MoreVertical,
+  Star,
+  Trash2,
+  Users,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ConfirmationModal from "../../../utils/Modals/ConfirmtionModal";
-import LoadingUi from "../../../utils/Modals/LoadingUi";
-import StatCard from "@/components/CommonComponents/StatCard"
+import { StatCard } from "@/components/CommonComponents/CourseDetailsStatCard";
+import { CourseDetailsSkeleton } from "@/components/CommonComponents/Skeletons/CourseDetailsSkeleton";
+import {
+  deleteCourseById,
+  getCourseDetailsByCourseId,
+  updateCourseStatus,
+} from "@/api/backendCalls/course";
 
 const SingleCourseDetails = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isDarkMode = useSelector((state) => state.admin.toggleTheme);
-  const { course } = useSelector((state) => state.courses);
   const { course_id } = useParams();
+  const [course, setCourse] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const fetchCourseData = async () => {
       setIsLoading(true);
       try {
-        await dispatch(fetchCoursesByCourseId(course_id)).unwrap();
+        const courseData = await getCourseDetailsByCourseId(
+          course_id,
+          "adminSingleCourse",
+          "admin"
+        );
+        setCourse(courseData);
       } catch (error) {
         console.error("Fetch Course Details error:", error);
         toast.error("Failed to load course details. Please try again.");
@@ -34,11 +61,11 @@ const SingleCourseDetails = () => {
     };
 
     fetchCourseData();
-  }, [dispatch, course_id]);
+  }, [course_id]);
 
   const handleDeleteCourse = async () => {
     try {
-      await dispatch(deleteCourseById(course_id)).unwrap();
+      await deleteCourseById(course_id);
       toast.success("Course deleted successfully");
       navigate("/admin/courses");
     } catch (error) {
@@ -49,8 +76,14 @@ const SingleCourseDetails = () => {
 
   const handleToggleVisibility = async () => {
     try {
-      await dispatch(handleCourseStatus(course_id)).unwrap();
-      toast.success(`Course ${course.is_visible ? "hidden" : "visible"} successfully`);
+      const updatedCourse = await updateCourseStatus(course_id);
+      setCourse((prev) => ({
+        ...prev,
+        is_listed: !prev.is_listed,
+      }));
+      toast.success(
+        `Course ${updatedCourse.is_listed ? "Listed" : "Unlisted"} successfully`
+      );
     } catch (error) {
       console.error("Toggle Course Visibility error:", error);
       toast.error("Failed to update course visibility. Please try again.");
@@ -58,167 +91,216 @@ const SingleCourseDetails = () => {
   };
 
   if (isLoading) {
-    return <LoadingUi text="Loading course details..." />;
+    return <CourseDetailsSkeleton />;
   }
 
   if (!course) {
-    return <div className="flex justify-center items-center h-screen">Course not found</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Course not found
+      </div>
+    );
   }
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"}`}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div
+      className={`min-h-screen ${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center space-x-2 mb-6 text-sm">
-          <Link to="/admin/courses" className={`flex items-center ${isDarkMode ? " text-gray-400 hover:text-gray-200" : " text-gray-400 hover:text-gray-700"}`}>
-            <span>Courses</span>
-          </Link>
-          <span className="text-gray-500">/</span>
-          <span>{course.title}</span>
+        <nav className="text-sm mb-6">
+          <ol className="flex items-center space-x-2">
+            <li>
+              <Link
+                to="/admin/courses"
+                className="hover:underline text-[#ff5722]"
+              >
+                Courses
+              </Link>
+            </li>
+            <li className="text-gray-500">/</li>
+            <li>{course.title}</li>
+          </ol>
         </nav>
 
         {/* Main Content */}
-        <Card className={`p-6 mb-8 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="md:w-1/3">
-              <img
-                src={course.course_thumbnail}
-                alt={course.title}
-                className="w-full rounded-lg"
-              />
-            </div>
-            <div className="md:w-2/3">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-                  <p className="text-gray-500 mb-4">{course.course_description}</p>
-                  <div className="flex items-center gap-4 mb-6">
-                    <img
-                      src={course.tutor_avatar}
-                      alt={course.tutor_name}
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div>
-                      <p className="font-medium">Instructor</p>
-                      <p className="text-sm text-gray-500">{course.tutor_name}</p>
+        <Card className={`mb-8 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="lg:w-1/3">
+                <img
+                  src={course.course_thumbnail}
+                  alt={course.title}
+                  className="w-full rounded-lg object-cover aspect-video"
+                />
+              </div>
+              <div className="lg:w-2/3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      Uploaded:{" "}
+                      {moment(course.created_at).format("MMM DD, YYYY")} • Last
+                      Updated:{" "}
+                      {moment(course.updated_at).format("MMM DD, YYYY")}
+                    </p>
+                    <h1 className="text-3xl font-bold mt-2 mb-4">
+                      {course.title}
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      {course.course_description}
+                    </p>
+
+                    <div className="flex items-center gap-4 mb-6">
+                      <img
+                        src={course.tutor_avatar}
+                        alt={course.tutor_name}
+                        className="w-10 h-10 rounded-full border-2 border-gray-200 dark:border-gray-700"
+                      />
+                      <div>
+                        <p className="text-sm font-medium">Instructor</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {course.tutor_name}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {/* <DropdownMenuItem
+                        onClick={() =>
+                          navigate(`/admin/courses/edit/${course_id}`)
+                        }
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Course
+                      </DropdownMenuItem> */}
+                      <DropdownMenuItem
+                        onClick={() => setIsDeleteModalOpen(true)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Course
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleToggleVisibility}>
+                        {course.is_listed ? (
+                          <EyeOff className="w-4 h-4 mr-2" />
+                        ) : (
+                          <Eye className="w-4 h-4 mr-2" />
+                        )}
+                        {course.is_listed ? "Unlist Course" : "List Course"}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                <div className={`text-sm  mt-4 flex justify-center mr-3  text-blue-500`}>
-                  <span className="font-semibold font-poppins ">{(course.category ?? course.category_id.title).toUpperCase()}</span>
-                </div>
-                {/* <div className="flex space-x-2">
-                  <Button
-                    text="Edit"
-                    onClick={() => navigate(`/admin/courses/edit/${course_id}`)}
-                    className="bg-blue-500 text-white"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                  </Button>
-                  <Button
-                    text="Delete"
-                    onClick={() => setIsDeleteModalOpen(true)}
-                    className="bg-red-500 text-white"
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                  </Button>
-                  <Button
-                    text={course.is_visible ? "Hide" : "Show"}
-                    onClick={handleToggleVisibility}
-                    className={course.is_visible ? "bg-yellow-500 text-white" : "bg-green-500 text-white"}
-                  >
-                    {course.is_visible ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-                  </Button>
-                </div> */}
-              </div>
 
-              <hr className="my-4 border-gray-300" />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                    <span className="font-bold">
+                      {course.average_rating.toFixed(1)}
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      ({course.ratings_count} Ratings)
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Course price
+                    </p>
+                    <p className="text-xl font-bold">
+                      ₹{course.price.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Created</p>
-                  <p>{moment(course.created_at).format("MMM DD, YYYY")}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Last Updated</p>
-                  <p>{moment(course.updated_at).format("MMM DD, YYYY")}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Price</p>
-                  <p className="text-xl font-bold text-orange-500">₹{course.price.toFixed(2)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Visibility</p>
-                  <p className={course.is_visible ? "text-green-500" : "text-red-500"}>
-                    {course.is_visible ? "Un Listed " : "Listed"}
-                  </p>
+                <div className="mt-4">
+                  <Badge
+                    className={
+                      course.is_listed
+                        ? "bg-green-500 text-white"
+                        : "bg-red-500 text-white"
+                    }
+                  >
+                    {course.is_listed ? "Listed" : "Unlisted"}
+                  </Badge>
                 </div>
               </div>
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <StatCard
-            icon={<BookOpen className="w-6 h-6 text-blue-500" />}
+            icon={BookOpen}
             title="Lectures"
             value={course.lectures?.length || 0}
-            isDarkMode={isDarkMode}
           />
           <StatCard
-            icon={<Star className="w-6 h-6 text-yellow-500" />}
+            icon={Star}
             title="Average Rating"
-            value={(course.average_rating).toFixed(1) || 0}
-            subtitle={`(${course.ratings_count || 0} ratings)`}
-            isDarkMode={isDarkMode}
+            value={course.average_rating.toFixed(1)}
+            subtitle={`(${course.ratings_count} ratings)`}
           />
           <StatCard
-            icon={<Users className="w-6 h-6 text-green-500" />}
+            icon={Users}
             title="Students Enrolled"
             value={course.enrolled_count || 0}
-            isDarkMode={isDarkMode}
           />
+          <StatCard icon={FileText} title="Course Level" value={course.level} />
+          <StatCard icon={Globe} title="Language" value={course.language} />
           <StatCard
-            icon={<FileText className="w-6 h-6 text-purple-500" />}
-            title="Course Level"
-            value={course.level}
-            isDarkMode={isDarkMode}
-          />
-          <StatCard
-            icon={<Globe className="w-6 h-6 text-indigo-500" />}
-            title="Language"
-            value={course.language}
-            isDarkMode={isDarkMode}
-          />
-          <StatCard
-            icon={<Clock3 className="w-6 h-6 text-pink-500" />}
+            icon={Clock}
             title="Duration"
             value={course.duration || "N/A"}
-            isDarkMode={isDarkMode}
           />
         </div>
 
         {/* Lessons Preview */}
-        <Card className={`p-6 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
-          <h2 className="text-2xl font-bold mb-4">Course Content</h2>
-          <div className="space-y-4">
-            {course.lectures && course.lectures.map((lesson, index) => (
-              <div key={index} className={`p-4 rounded-lg ${isDarkMode ? "bg-gray-700" : "bg-gray-50"}`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">{lesson.title}</h3>
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
-                    <Clock className="w-4 h-4" />
-                    <span>{lesson.duration}</span>
+        <div className="space-y-6">
+          {course.lectures?.map((lesson, index) => (
+            <Card
+              key={index}
+              className={isDarkMode ? "bg-gray-800" : "bg-white"}
+            >
+              <CardContent className="p-0">
+                <div className="flex flex-col md:flex-row">
+                  <div className="md:w-1/4 relative bg-gray-200 dark:bg-gray-700">
+                    <img
+                      src={lesson.video_thumbnail}
+                      alt={lesson.title}
+                      className="w-full h-full object-cover aspect-video"
+                    />
+                  </div>
+                  <div className="flex-1 p-6">
+                    <h3 className="text-2xl font-bold mb-4">{lesson.title}</h3>
+                    <div className="flex flex-wrap gap-6 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Date:{" "}
+                          {moment(lesson.created_at).format("MMM DD, YYYY")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Duration: {lesson.duration}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <p className="mt-2 text-sm text-gray-500">
-                  Created on {moment(lesson.created_at).format("MMM DD, YYYY")}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
       <ConfirmationModal
@@ -237,4 +319,3 @@ const SingleCourseDetails = () => {
 };
 
 export default SingleCourseDetails;
-

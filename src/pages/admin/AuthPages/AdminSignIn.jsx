@@ -73,9 +73,7 @@ export default function AdminSignIn() {
 				toast.success("Sign-in successful");
 				storeAccessToken("admin", accessToken, 13);
 				dispatch(adminLogin(response.data));
-				setTimeout(() => {
-					navigate("/admin/dashboard");
-				}, 1500);
+				navigate("/admin/dashboard");
 			}
 		} catch (error) {
 			console.error("Sign-in error:", error);
