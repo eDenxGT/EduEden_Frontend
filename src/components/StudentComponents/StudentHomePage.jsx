@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Star, Users, Code, Smartphone, Database, Palette, Network, Bot, Gamepad2, BookOpen, Award, CheckCircle, ArrowRight } from 'lucide-react';
-import { IoIosGitBranch } from "react-icons/io";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import {
+  Star,
+  Users,
+  Code,
+  Smartphone,
+  Database,
+  Gamepad2,
+  BookOpen,
+  Award,
+  CheckCircle,
+  ArrowRight,
+} from "lucide-react";
 import { TbCertificate } from "react-icons/tb";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,27 +31,52 @@ import Google from "../../assets/images/landingPage/platforms/google.png";
 import StackOverFlow from "../../assets/images/landingPage/platforms/stack-removebg-preview.png";
 import YouTube from "../../assets/images/landingPage/platforms/yt.png";
 import JavaScript from "../../assets/images/landingPage/java-script-360x270.jpg";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { getItemsForStudentHome } from "@/api/backendCalls/student";
+import { CourseCardSkeleton } from "../CommonComponents/Skeletons/CourseCardSkeleton";
 
 export default function StudentHomePage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toggleTheme: isDarkMode, studentData } = useSelector(
     (state) => state.student
   );
+  const [topRatedCourses, setTopRatedCourses] = useState([]);
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await getItemsForStudentHome();
+      console.log(response);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setStats([
-        { title: 'Courses in Progress', value: 3, icon: BookOpen, color: 'text-blue-500' },
-        { title: 'Completed Courses', value: 2, icon: CheckCircle, color: 'text-green-500' },
-        { title: 'Certificates Earned', value: 1, icon: TbCertificate, color: 'text-purple-500' },
-        { title: 'Completed Quizzes', value: 5, icon: Award, color: 'text-yellow-500' },
+        {
+          title: "Courses Enrolled",
+          value: response.enrolledCourses,
+          icon: TbCertificate,
+          color: "text-purple-500",
+        },
+        {
+          title: "Completed Courses",
+          value: response.completedCourses,
+          icon: CheckCircle,
+          color: "text-green-500",
+        },
+        {
+          title: "Courses in Progress",
+          value: response.coursesInProgress,
+          icon: BookOpen,
+          color: "text-blue-500",
+        },
+        {
+          title: "Completed Quizzes",
+          value: response.completedQuizzes,
+          icon: Award,
+          color: "text-yellow-500",
+        },
       ]);
+      setTopRatedCourses(response.topRatedCourses);
       setLoading(false);
     };
     fetchStats();
@@ -82,7 +117,11 @@ export default function StudentHomePage() {
           </div>
           <div className="hidden md:block">
             <img
-              src={studentData?.avatar ? studentData?.avatar : "https://thumbs.dreamstime.com/b/smiling-anime-chibi-cartoon-boy-working-computer-white-background-smiling-anime-chibi-cartoon-boy-working-computer-321914300.jpg"}
+              src={
+                studentData?.avatar
+                  ? studentData?.avatar
+                  : "https://thumbs.dreamstime.com/b/smiling-anime-chibi-cartoon-boy-working-computer-white-background-smiling-anime-chibi-cartoon-boy-working-computer-321914300.jpg"
+              }
               alt="Student"
               className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg animate-bounce"
             />
@@ -97,16 +136,20 @@ export default function StudentHomePage() {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {loading
-            ? Array(4).fill(0).map((_, index) => (
-                <Skeleton key={index} className="h-[100px] w-full" />
-              ))
+            ? Array(4)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton key={index} className="h-[100px] w-full" />
+                ))
             : stats.map((stat, index) => (
                 <Card
                   key={stat.title}
                   className={`p-6 ${
                     isDarkMode
-                      ? `bg-${stat.color.split('-')[1]}-900`
-                      : `bg-gradient-to-br from-${stat.color.split('-')[1]}-50 to-${stat.color.split('-')[1]}-100`
+                      ? `bg-${stat.color.split("-")[1]}-900`
+                      : `bg-gradient-to-br from-${
+                          stat.color.split("-")[1]
+                        }-50 to-${stat.color.split("-")[1]}-100`
                   } hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 animate-fade-in`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
@@ -115,8 +158,8 @@ export default function StudentHomePage() {
                       <h3
                         className={`font-medium text-lg ${
                           isDarkMode
-                            ? `text-${stat.color.split('-')[1]}-200`
-                            : `text-${stat.color.split('-')[1]}-800`
+                            ? `text-${stat.color.split("-")[1]}-200`
+                            : `text-${stat.color.split("-")[1]}-800`
                         }`}
                       >
                         {stat.title}
@@ -124,14 +167,16 @@ export default function StudentHomePage() {
                       <stat.icon
                         className={`h-8 w-8 ${
                           isDarkMode
-                            ? `text-${stat.color.split('-')[1]}-300`
+                            ? `text-${stat.color.split("-")[1]}-300`
                             : stat.color
                         }`}
                       />
                     </div>
                     <p
                       className={`text-3xl font-bold mt-2 ${
-                        isDarkMode ? `text-${stat.color.split('-')[1]}-100` : `text-${stat.color.split('-')[1]}-600`
+                        isDarkMode
+                          ? `text-${stat.color.split("-")[1]}-100`
+                          : `text-${stat.color.split("-")[1]}-600`
                       }`}
                     >
                       {stat.value}
@@ -156,7 +201,7 @@ export default function StudentHomePage() {
             Browse Categories
           </h2>
           <Button
-		  onClick={() => navigate("/student/courses")}
+            onClick={() => navigate("/student/courses")}
             variant="ghost"
             className={`${
               isDarkMode
@@ -225,10 +270,11 @@ export default function StudentHomePage() {
                 isDarkMode ? "text-white" : "text-gray-800"
               }`}
             >
-              Recommended for You
+              Top Rated Courses
             </h2>
             <Button
-              variant="link"
+              onClick={() => navigate("/student/courses")}
+              variant="ghost"
               className={`${
                 isDarkMode
                   ? "text-blue-400 hover:text-blue-300"
@@ -240,9 +286,13 @@ export default function StudentHomePage() {
             </Button>
           </div>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.slice(0, 3).map((course, index) => (
+            {loading &&
+              Array(3)
+                .fill(0)
+                .map((_, index) => <CourseCardSkeleton key={index} />)}
+            {topRatedCourses.slice(0, 3).map((course, index) => (
               <Card
-                key={course.title}
+                key={course.course_id}
                 className={`overflow-hidden rounded-lg ${
                   isDarkMode ? "bg-gray-800" : "bg-white"
                 } shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in`}
@@ -251,14 +301,12 @@ export default function StudentHomePage() {
                 <img
                   alt={course.title}
                   className="aspect-video w-full object-cover"
-                  src={course.image}
+                  src={course.course_thumbnail}
                 />
                 <CardContent className="p-6">
                   <h3
                     className={`font-bold text-xl mb-2 min-h-[3.5rem] ${
-                      isDarkMode
-                        ? "text-white"
-                        : "text-gray-800"
+                      isDarkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
                     {course.title}
@@ -267,49 +315,44 @@ export default function StudentHomePage() {
                     <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                     <span
                       className={`text-lg font-medium ${
-                        isDarkMode
-                          ? "text-white"
-                          : "text-gray-800"
+                        isDarkMode ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      {course.rating}
+                      {course.average_rating.toFixed(1)}
                     </span>
                     <span
                       className={`${
-                        isDarkMode
-                          ? "text-gray-400"
-                          : "text-gray-600"
+                        isDarkMode ? "text-gray-400" : "text-gray-600"
                       }`}
                     >
-                      ({course.reviews} reviews)
+                      ({course.ratings_count} reviews)
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mb-4">
                     <Users
                       className={`h-5 w-5 ${
-                        isDarkMode
-                          ? "text-gray-400"
-                          : "text-gray-600"
+                        isDarkMode ? "text-gray-400" : "text-gray-600"
                       }`}
                     />
                     <span
                       className={`${
-                        isDarkMode
-                          ? "text-gray-400"
-                          : "text-gray-600"
+                        isDarkMode ? "text-gray-400" : "text-gray-600"
                       }`}
                     >
-                      {course.students} students
+                      {course.enrolled_count} students
                     </span>
                   </div>
                   <Button
-                    className={`w-full max-w-[200px] mx-auto ${
+                    onClick={() =>
+                      navigate(`/student/courses/${course.course_id}`)
+                    }
+                    className={`w-full  mx-auto ${
                       isDarkMode
                         ? "bg-blue-600 hover:bg-blue-700"
-                        : "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
+                        : " bg-[#ff6b35] hover:bg-[#e7693b]"
                     } text-white py-2 rounded-full transition-all duration-300`}
                   >
-                    Continue Learning
+                    Explore Course
                   </Button>
                 </CardContent>
               </Card>
@@ -343,9 +386,9 @@ export default function StudentHomePage() {
                 <img
                   src={platform.logo}
                   alt={`${platform.name} logo`}
-                  className={`object-contain ${
-                    platform.height
-                  } ${isDarkMode ? "filter invert" : ""}`}
+                  className={`object-contain ${platform.height} ${
+                    isDarkMode ? "filter invert" : ""
+                  }`}
                 />
               </div>
             ))}
@@ -375,36 +418,36 @@ const categories = [
     icon: <Database className="h-8 w-8 text-purple-600" />,
     bgColor: "bg-purple-50",
   },
-//   {
-//     name: "UI Design",
-//     count: "80",
-//     icon: <Palette className="h-8 w-8 text-orange-600" />,
-//     bgColor: "bg-orange-50",
-//   },
+  //   {
+  //     name: "UI Design",
+  //     count: "80",
+  //     icon: <Palette className="h-8 w-8 text-orange-600" />,
+  //     bgColor: "bg-orange-50",
+  //   },
   {
     name: "Game Development",
     count: "90",
     icon: <Gamepad2 className="h-8 w-8 text-red-600" />,
     bgColor: "bg-red-50",
   },
-//   {
-//     name: "Cyber Security",
-//     count: "70",
-//     icon: <Network className="h-8 w-8 text-indigo-600" />,
-//     bgColor: "bg-indigo-50",
-//   },
-//   {
-//     name: "Machine Learning",
-//     count: "110",
-//     icon: <Bot className="h-8 w-8 text-pink-600" />,
-//     bgColor: "bg-pink-50",
-//   },
-//   {
-//     name: "Git & Version Control",
-//     count: "95",
-//     icon: <IoIosGitBranch className="h-8 w-8 text-teal-600" />,
-//     bgColor: "bg-teal-50",
-//   },
+  //   {
+  //     name: "Cyber Security",
+  //     count: "70",
+  //     icon: <Network className="h-8 w-8 text-indigo-600" />,
+  //     bgColor: "bg-indigo-50",
+  //   },
+  //   {
+  //     name: "Machine Learning",
+  //     count: "110",
+  //     icon: <Bot className="h-8 w-8 text-pink-600" />,
+  //     bgColor: "bg-pink-50",
+  //   },
+  //   {
+  //     name: "Git & Version Control",
+  //     count: "95",
+  //     icon: <IoIosGitBranch className="h-8 w-8 text-teal-600" />,
+  //     bgColor: "bg-teal-50",
+  //   },
 ];
 
 const courses = [
@@ -521,4 +564,3 @@ const events = [
     image: Reactjs,
   },
 ];
-

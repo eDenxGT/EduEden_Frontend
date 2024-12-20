@@ -80,7 +80,7 @@ const Quiz = () => {
       const response = await submitQuiz(quiz_id, answers);
       if (response.status === 200) {
         toast.success(response?.data?.message);
-        localStorage.removeItem(`quiz_${quiz_id}_startTime`); // Clear the timer from localStorage after submission
+        localStorage.removeItem(`quiz_${quiz_id}_startTime`); 
         navigate(`/student/my-courses/${course_id}/quiz/${quiz_id}/result`);
       }
     } catch (error) {

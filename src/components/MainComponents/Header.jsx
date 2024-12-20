@@ -382,7 +382,7 @@ const Header = ({ role }) => {
               </div>
 
               {/* Theme Toggle Button */}
-              <div className="relative">
+              {/* <div className="relative">
                 <button
                   onClick={handleChange}
                   className={`w-12 h-6 rounded-full p-0.5 transition-colors duration-300 
@@ -406,7 +406,7 @@ const Header = ({ role }) => {
                     )}
                   </div>
                 </button>
-              </div>
+              </div> */}
 
               {/* Auth Section */}
               <div className="flex items-center gap-3">

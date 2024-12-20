@@ -62,10 +62,10 @@ const Certificate = ({
 					</div>
 
 					{/* Certificate ID and Date */}
-					<div className="flex justify-between text-xs text-gray-400">
+					{/* <div className="flex justify-between text-xs text-gray-400">
 						<span>Certificate ID: {certificateId}</span>
 						<span>{completionDate}</span>
-					</div>
+					</div> */}
 				</footer>
 			</div>
 		</div>

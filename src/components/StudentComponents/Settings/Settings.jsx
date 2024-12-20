@@ -23,55 +23,55 @@ const Settings = () => {
 			description: "Manage your profile and account details",
 			link: "/student/settings/profile",
 		},
-		{
-			icon: Lock,
-			title: "Security",
-			description: "Manage your account security and password",
-			link: "/student/settings/security",
-		},
-		{
-			icon: Bell,
-			title: "Notifications",
-			description: "Manage your notification preferences",
-			link: "/student/settings/notifications",
-		},
-		{
-			icon: Eye,
-			title: "Privacy",
-			description: "Manage your privacy settings",
-			link: "/student/settings/privacy",
-		},
+		// {
+		// 	icon: Lock,
+		// 	title: "Security",
+		// 	description: "Manage your account security and password",
+		// 	link: "/student/settings/security",
+		// },
+		// {
+		// 	icon: Bell,
+		// 	title: "Notifications",
+		// 	description: "Manage your notification preferences",
+		// 	link: "/student/settings/notifications",
+		// },
+		// {
+		// 	icon: Eye,
+		// 	title: "Privacy",
+		// 	description: "Manage your privacy settings",
+		// 	link: "/student/settings/privacy",
+		// },
 		{
 			icon: Book,
 			title: "Courses",
 			description: "View your active and completed courses",
-			link: "/student/settings/courses",
+			link: "/student/my-courses",
 		},
-		{
-			icon: DollarSign,
-			title: "Payment Information",
-			description: "Manage your payment methods and billing history",
-			link: "/student/settings/payment",
-		},
-		{
-			icon: SettingsIcon,
-			title: "Preferences",
-			description:
-				"Set your language, time zone, and accessibility options",
-			link: "/student/settings/preferences",
-		},
+		// {
+		// 	icon: DollarSign,
+		// 	title: "Payment Information",
+		// 	description: "Manage your payment methods and billing history",
+		// 	link: "/student/settings/payment",
+		// },
+		// {
+		// 	icon: SettingsIcon,
+		// 	title: "Preferences",
+		// 	description:
+		// 		"Set your language, time zone, and accessibility options",
+		// 	link: "/student/settings/preferences",
+		// },
 		{
 			icon: HelpCircle,
 			title: "Help and Support",
 			description: "Get help or contact support",
-			link: "/student/settings/support",
+			link: "/contact-us",
 		},
-		{
-			icon: Share2,
-			title: "Refer a Friend",
-			description: "Share your referral link and earn rewards",
-			link: "/student/settings/referral",
-		},
+		// {
+		// 	icon: Share2,
+		// 	title: "Refer a Friend",
+		// 	description: "Share your referral link and earn rewards",
+		// 	link: "/student/settings/referral",
+		// },
 	];
 
 	return (

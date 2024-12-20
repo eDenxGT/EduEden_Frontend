@@ -23,3 +23,13 @@ export const getStudentPurchases = async (params) => {
     return null;
   }
 };
+
+export const getItemsForStudentHome = async () => {
+  try {
+    const response = await axiosInstance.get(`/student/get-items-for-home`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching items for student home:", error);
+    return null;
+  }
+};
