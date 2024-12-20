@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import Card  from "./Card";
 
-const StatCard = ({ icon, title, value, subtitle, isDarkMode }) => (
-   <Card className={`p-6 ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
+const StatCard = ({ icon, title, value, subtitle, isDarkMode , color}) => (
+   <Card className={`p-6 ${color} ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
      <div className="flex items-center space-x-4">
        <div className={`p-3 rounded-full ${isDarkMode ? "bg-gray-700" : "bg-gray-100"}`}>
          {icon}
