@@ -141,11 +141,11 @@ const navItems = {
 			icon: <PiHandWithdrawDuotone className="h-5 w-5" />,
 			link: "/admin/tutors/withdrawals",
 		},
-		{
-			title: "Settings",
-			icon: <Settings className="h-5 w-5" />,
-			link: "/admin/settings",
-		},
+		// {
+		// 	title: "Settings",
+		// 	icon: <Settings className="h-5 w-5" />,
+		// 	link: "/admin/settings",
+		// },
 	],
 	public: [
 		{

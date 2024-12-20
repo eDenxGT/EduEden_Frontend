@@ -184,6 +184,20 @@ export const fetchLecturesByCourseId = async ({ course_id, role }) => {
   }
 };
 
+export const fetchLecturesByCourseIdForTutor = async ({ course_id }) => {
+  // console.log(course_id, student_id)
+  try {
+    const response = await axiosInstance.get(
+      `/lectures/get-courses-for-tutors/${course_id}?role=tutor`
+    );
+    // console.log("LECTURE FETCHING:",response)
+    return response?.data?.lectures;
+  } catch (error) {
+    console.log(error?.response?.data?.message || "Failed to fetch lectures.");
+    return null;
+  }
+};
+
 //* ================= Quizzes Section ================= *//
 export const fetchQuizByQuizId = async (quiz_id) => {
   try {

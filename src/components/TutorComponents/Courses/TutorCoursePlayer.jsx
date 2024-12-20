@@ -5,21 +5,14 @@ import Button from "@/components/CommonComponents/Button";
 import { IoSettingsSharp, IoPauseSharp, IoPlaySharp } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
-import { FaCircleCheck } from "react-icons/fa6";
 import { toast } from "sonner";
 import LoadingUi from "../../../utils/Modals/LoadingUiWithText";
-import ReviewModal from "./ReviewModal";
-import { axiosInstance } from "../../../api/axiosConfig";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import {
-  fetchCourseProgressByStudentId,
-  fetchLecturesByCourseId,
-  updateCourseProgressByStudentId,
-} from "@/api/backendCalls/course";
+import { fetchLecturesByCourseIdForTutor } from "@/api/backendCalls/course";
 import CoursePlayerSkeleton from "@/components/CommonComponents/Skeletons/CoursePlayerSkeleton";
 
-const CoursePlayer = () => {
+const TutorCoursePlayer = () => {
   const playerRef = useRef(null);
   const [playerState, setPlayerState] = useState({
     playing: false,
@@ -36,12 +29,10 @@ const CoursePlayer = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [showControls, setShowControls] = useState(false);
   const [isLoadingUi, setIsLoadingUi] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [currentLecture, setCurrentLecture] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [loadingText, setLoadingText] = useState(null);
-  const { toggleTheme: isDarkMode, studentData } = useSelector(
-    (state) => state.student
+  const [currentLecture, setCurrentLecture] = useState(null);
+  const { toggleTheme: isDarkMode, tutorData } = useSelector(
+    (state) => state.tutor
   );
   const navigate = useNavigate();
   const { course_id, lecture_id } = useParams();
@@ -52,30 +43,9 @@ const CoursePlayer = () => {
     error: lecturesError,
   } = useQuery({
     queryKey: ["lectures", course_id],
-    queryFn: () => fetchLecturesByCourseId({ course_id, role: "student" }),
+    queryFn: () => fetchLecturesByCourseIdForTutor({ course_id, role: "tutor" }),
     enabled: !!course_id,
   });
-
-  const {
-    data: courseProgress,
-    isLoading: progressLoading,
-    error: progressError,
-  } = useQuery({
-    queryKey: ["courseProgress", course_id],
-    queryFn: () =>
-      fetchCourseProgressByStudentId({
-        student_id: studentData?.user_id,
-        course_id,
-      }),
-    enabled: !!course_id,
-  });
-
-  const completedLectures =
-    courseProgress?.progress?.filter(
-      (lecture) => lecture?.status === "completed"
-    ).length || 0;
-  const totalLectures = courseProgress?.progress?.length || 0;
-  const currentProgress = Math.floor((completedLectures / totalLectures) * 100);
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -92,10 +62,8 @@ const CoursePlayer = () => {
   }, []);
 
   useEffect(() => {
-    setCurrentLecture(
-      lectures?.find((lecture, index) => index === completedLectures)
-    );
-  }, [completedLectures, lectures]);
+    setCurrentLecture(lectures?.[0]);
+  }, [lectures]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -113,12 +81,6 @@ const CoursePlayer = () => {
       played: state.played,
       playedSeconds: state.playedSeconds,
     }));
-    if (
-      state.played > 0.9 &&
-      state.playedSeconds >= playerState.duration - 0.1
-    ) {
-      handleVideoComplete();
-    }
   };
 
   const handleSeek = (e) => {
@@ -178,76 +140,18 @@ const CoursePlayer = () => {
     }
   }, [playerState.played]);
 
-  const tutor_name = lectures?.find((item) => item?.tutor_name)?.tutor_name;
-  const tutor_avatar = lectures?.find(
-    (item) => item?.tutor_avatar
-  )?.tutor_avatar;
+  const tutor_name = tutorData?.name;
+  const tutor_avatar = tutorData?.avatar;
 
   const handleDownload = (url) => {
     window.location.href = url;
   };
 
-  const handleVideoComplete = async () => {
-    console.log("VIDEO COMPLETED");
-    setPlayerState((prev) => ({ ...prev, playing: false }));
-
-    try {
-      setIsLoadingUi(true);
-      const response = await updateCourseProgressByStudentId({
-        course_id,
-        student_id: studentData?.user_id,
-        lecture_id: currentLecture?.lecture_id,
-        status: "completed",
-      });
-      if (response?.data?.quiz) {
-        toast.success(
-          "Course completed! Complete the Quiz to Earn certificate."
-        );
-        navigate(
-          `/student/my-courses/${course_id}/quiz/${response.data.quiz._id}`
-        );
-      } else {
-        toast.success("Lecture completed successfully!. Moving to next lecture.");
-      }
-    } catch (error) {
-      console.error("Failed to update progress:", error);
-    } finally {
-      setIsLoadingUi(false);
-    }
+  const handleLectureClick = (lecture) => {
+    setCurrentLecture(lecture);
   };
 
-  const handleReviewSubmit = async (rating) => {
-    try {
-      setLoadingText("Review Submitting");
-      setIsReviewModalOpen(false);
-      setIsLoadingUi(true);
-      const response = await axiosInstance.put("/courses/review", {
-        course_id,
-        student_id: studentData?.user_id,
-        rating,
-      });
-      if (response?.status === 200) {
-        toast.success(response?.data?.message);
-      }
-    } catch (error) {
-      console.log("Review submitting error: ", error);
-      toast.error(error?.response?.data?.message);
-    } finally {
-      setIsLoadingUi(false);
-      setLoadingText(null);
-    }
-  };
-
-  const handleReviewCancel = async () => {
-    setIsReviewModalOpen(false);
-  };
-
-  const handleLectureClick = (lecture, index) => {
-    if (index <= completedLectures) return setCurrentLecture(lecture);
-    toast.info("Please complete previous lectures first");
-  };
-
-  if (lecturesLoading || progressLoading)
+  if (lecturesLoading)
     return <CoursePlayerSkeleton />;
 
   return (
@@ -280,13 +184,7 @@ const CoursePlayer = () => {
               {currentLecture?.title || ""}
             </h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button
-              onClick={() => setIsReviewModalOpen(true)}
-              text="Rate this course"
-              className="bg-orange-100 border border-orange-200 text-orange-500 mr-2 hover:bg-orange-200 text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2"
-            />
-          </div>
+
         </div>
 
         {/* Main Content */}
@@ -489,7 +387,7 @@ const CoursePlayer = () => {
               </div>
             </div>
 
-            {/* Content Section (moved from bottom) */}
+            {/* Content Section */}
             <div className="max-w-4xl mx-auto w-full p-4 sm:p-6">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
@@ -652,35 +550,16 @@ const CoursePlayer = () => {
                       isDarkMode ? "text-gray-400" : "text-gray-500"
                     }`}
                   >
-                    ({lectures?.length - 2})
+                    ({lectures?.length})
                   </span>
                 </h2>
-              </div>
-              <div
-                className={`w-full ${
-                  isDarkMode ? "bg-gray-700" : "bg-gray-200"
-                } rounded-none h-2`}
-              >
-                <div
-                  className="bg-orange-500 h-2 rounded-none"
-                  style={{
-                    width: `${currentProgress + "%"}`,
-                  }}
-                ></div>
-              </div>
-              <div
-                className={`text-xs sm:text-sm ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                } mt-1`}
-              >
-                {currentProgress}% Completed
               </div>
             </div>
 
             <div className="overflow-auto h-[calc(100vh-12rem)]">
-              {lectures?.slice(0, -2)?.map((lecture, index) => (
+              {lectures?.map((lecture, index) => (
                 <div
-                  onClick={() => handleLectureClick(lecture, index)}
+                  onClick={() => handleLectureClick(lecture)}
                   key={index}
                   className={`flex items-center p-2 sm:p-3 border-b ${
                     lecture.lecture_id === currentLecture?.lecture_id
@@ -716,41 +595,20 @@ const CoursePlayer = () => {
                       {lecture?.duration}
                     </div>
                   </div>
-                  {courseProgress?.progress?.find(
-                    (item) =>
-                      item?.lecture_id === lecture?.lecture_id &&
-                      item?.status === "completed"
-                  ) && (
-                    <FaCircleCheck className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 ml-2" />
-                  )}
                 </div>
               ))}
             </div>
           </div>
         </div>
       </div>
-      {isReviewModalOpen && (
-        <ReviewModal
-          isOpen={isReviewModalOpen}
-          onSubmit={(rating) => handleReviewSubmit(rating)}
-          onClose={handleReviewCancel}
-          isDarkMode={isDarkMode}
-        />
-      )}
       {isLoadingUi && (
         <LoadingUi
-          text={
-            loadingText ??
-            (completedLectures === lectures?.length - 3 ||
-            completedLectures === lectures?.length - 2
-              ? "Generating Quiz..."
-              : "Next Lecture Loading...")
-          }
+          text="Loading..."
         />
       )}
     </>
   );
 };
 
-export default CoursePlayer;
+export default TutorCoursePlayer;
 

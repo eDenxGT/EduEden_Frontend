@@ -118,7 +118,7 @@ const CourseDetails = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                    <span className="font-bold">{courseData?.average_rating || 0}</span>
+                    <span className="font-bold">{courseData?.average_rating.toFixed(1) || 0}</span>
                     <span className="text-gray-600 dark:text-gray-400">
                       ({courseData?.ratings_count || 0} Ratings)
                     </span>

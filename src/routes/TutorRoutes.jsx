@@ -11,7 +11,7 @@ import MyCourses from "../components/TutorComponents/Courses/MyCourses";
 import CreateCourseLayout from "../components/TutorComponents/Courses/CreateCourseLayout";
 import CourseDetails from "../components/TutorComponents/Courses/CourseDetails";
 import EditCourseLayout from "../components/TutorComponents/Courses/EditCourseLayout";
-import CoursePlayer from "../components/TutorComponents/Courses/CoursePlayer";
+import TutorCoursePlayer from "../components/TutorComponents/Courses/TutorCoursePlayer";
 import { Chat } from "@/utils/Chat/Chat";
 import Earnings from "@/components/TutorComponents/Withdrawals/Earnings";
 import NotFoundPage from "@/pages/Others/NotFoundPage";
@@ -52,9 +52,8 @@ const TutorRoutes = () => {
 					<Route path="settings/profile" element={<ProfileManagement />} />
 					<Route path="my-courses" element={<MyCourses />} />
 					<Route path="my-courses/:course_id" element={<CourseDetails />} />
-					<Route path="my-courses/:course_id/lectures/:lecture_id" element={<CoursePlayer />} />
+					<Route path="my-courses/:course_id/lectures/:lecture_id" element={<TutorCoursePlayer />} />
 					<Route path="my-courses/edit/:course_id" element={<EditCourseLayout />} />
-					{/* <Route path="my-courses/dummy" element={<DummyDetails />} /> */}
 
 					<Route path="courses/new" element={<CreateCourseLayout />} />
 
