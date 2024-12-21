@@ -340,7 +340,7 @@ const Header = ({ role }) => {
                 >
                   <Bell className="h-5 w-5" />
                 </button> */}
-                {(role === "student" || role === "public") && (
+                {(role === "student") && (
                   <>
                     {/* <button
                       onClick={() =>
@@ -430,7 +430,7 @@ const Header = ({ role }) => {
                   </div>
                 ) : (
                   <Link to="/student/signup">
-                    <Button className={`bg-[#ff662e]`}>Create Account</Button>
+                    <Button className={`bg-[#ff662e] text-white font-semibold`}>Create Account</Button>
                   </Link>
                 )}
               </div>

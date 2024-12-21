@@ -60,6 +60,7 @@ const CoursePlayer = () => {
     data: courseProgress,
     isLoading: progressLoading,
     error: progressError,
+    refetch: refetchProgress,
   } = useQuery({
     queryKey: ["courseProgress", course_id],
     queryFn: () =>
@@ -199,14 +200,17 @@ const CoursePlayer = () => {
         lecture_id: currentLecture?.lecture_id,
         status: "completed",
       });
+      console.log(response)
       if (response?.data?.quiz) {
         toast.success(
           "Course completed! Complete the Quiz to Earn certificate."
         );
+        refetchProgress()
         navigate(
           `/student/my-courses/${course_id}/quiz/${response.data.quiz._id}`
         );
       } else {
+        refetchProgress()
         toast.success("Lecture completed successfully!. Moving to next lecture.");
       }
     } catch (error) {

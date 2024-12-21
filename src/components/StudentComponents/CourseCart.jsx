@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Star, Trash2, ShoppingBag } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "@/components/ui/button";
+import  Button  from "@/components/CommonComponents/Button";
 import { Card } from "@/components/ui/card";
 import { removeFromCart } from "../../store/thunks/cartThunks";
 
@@ -63,7 +63,7 @@ const CourseCart = () => {
               </p>
               <Button
                 text="Explore Courses"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-md"
+                className="bg-orange-500 max-w-fit font-semibold hover:bg-orange-600 text-white px-6 py-3 rounded-md"
                 onClick={handleNavigateToCourses}
               />
             </div>
