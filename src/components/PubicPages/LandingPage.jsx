@@ -1,21 +1,9 @@
-import {
-	Star,
-	Users,
-	Code,
-	Smartphone,
-	Database,
-	Palette,
-	Network,
-	Bot,
-	Gamepad2,
-	ArrowRight,
-	Calendar,
-} from "lucide-react";
+import { Star, Users, Code, Smartphone, Database, Palette, Network, Bot, Gamepad2, ArrowRight, Calendar } from 'lucide-react';
 import { IoIosGitBranch } from "react-icons/io";
 import Card from "../../components/CommonComponents/Card";
 import Button from "../../components/CommonComponents/Button";
 
-import BoyImage from "../../assets/images/landingPage/Boy1.jpg";
+import BoyImage from "../../assets/images/landingPage/Boy1.avif";
 import BrototypeLogo from "../../assets/images/landingPage/platforms/brototype_logo.png";
 import OpenAi from "../../assets/images/landingPage/platforms/openai-removebg-preview.png";
 import Reactjs from "../../assets/images/landingPage/Reactjs.png";
@@ -90,7 +78,7 @@ export default function LandingPage() {
 									className={`w-auto max-w-fit px-4 sm:px-6 py-2 sm:py-3 ${
 										isDarkMode
 											? "bg-blue-600 hover:bg-blue-700"
-											: "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
+											: "bg-orange-500 hover:bg-orange-600"
 									} text-white rounded-full text-base sm:text-lg font-semibold transition-colors duration-300`}
 								/>
 							</div>
@@ -183,7 +171,7 @@ export default function LandingPage() {
 								className={`text-2xl sm:text-3xl md:text-4xl font-bold ${
 									isDarkMode ? "text-white" : "text-gray-800"
 								}`}>
-								Best Selling Courses
+								Top Rated Courses
 							</h2>
 							<button
 								className={`${
@@ -260,7 +248,7 @@ export default function LandingPage() {
 											className={`w-full ${
 												isDarkMode
 													? "bg-blue-600 hover:bg-blue-700"
-													: "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
+													: "bg-orange-500 hover:bg-orange-600"
 											} text-white py-2 rounded-full text-base sm:text-lg font-semibold transition-colors duration-300`}
 										/>
 									</div>
@@ -358,7 +346,7 @@ export default function LandingPage() {
 											className={`w-full ${
 												isDarkMode
 													? "bg-blue-600 hover:bg-blue-700"
-													: "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
+													: "bg-orange-500 hover:bg-orange-600"
 											} text-white py-2 rounded-full text-lg font-semibold transition-colors duration-300`}
 										/>
 									</div>
@@ -368,98 +356,9 @@ export default function LandingPage() {
 					</div>
 				</section>
 
-				{/* Upcoming Quiz Events Section */}
-				<section
-					className={`container mx-auto xl:max-w-6xl px-4 py-16 ${
-						isDarkMode ? "bg-gray-800" : ""
-					}`}>
-					<div className="flex justify-between items-center mb-12">
-						<h2
-							className={`text-3xl md:text-4xl font-bold ${
-								isDarkMode ? "text-white" : "text-gray-800"
-							}`}>
-							Upcoming Quiz Events
-						</h2>
-						<button
-							className={`${
-								isDarkMode
-									? "text-blue-400 hover:text-blue-300"
-									: "text-[#ff6b35] hover:text-[#ff8c35]"
-							} flex items-center text-lg font-semibold transition-colors duration-300`}>
-							See more
-							<ArrowRight
-								className="ml-2 h-5 w-5"
-								aria-hidden="true"
-							/>
-						</button>
-					</div>
-					<div className="grid gap-8">
-						{events.map((event) => (
-							<Card
-								key={event.title}
-								className={`flex flex-col sm:flex-row rounded-xl overflow-hidden ${
-									isDarkMode
-										? "bg-gray-700 hover:bg-gray-600"
-										: "bg-white hover:shadow-xl"
-								} transition-all duration-300`}>
-								<img
-									alt={event.title}
-									className="w-full sm:w-48 h-48 sm:h-auto object-cover"
-									src={event.image}
-								/>
-								<div className="flex-1 p-6">
-									<div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-										<div>
-											<h3
-												className={`font-bold text-xl mb-2 ${
-													isDarkMode
-														? "text-white"
-														: "text-gray-800"
-												}`}>
-												{event.title}
-											</h3>
-											<p
-												className={`${
-													isDarkMode
-														? "text-gray-300"
-														: "text-gray-600"
-												} mb-2`}>
-												<Calendar
-													className="inline-block mr-2"
-													aria-hidden="true"
-												/>
-												Date: {event.date}
-											</p>
-											<p
-												className={`${
-													isDarkMode
-														? "text-gray-300"
-														: "text-gray-600"
-												}`}>
-												<Users
-													className="inline-block mr-2"
-													aria-hidden="true"
-												/>
-												Participants:{" "}
-												{event.participants}
-											</p>
-										</div>
-										<Button
-											text="Join Now"
-											className={`${
-												isDarkMode
-													? "bg-blue-600 hover:bg-blue-700"
-													: "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
-											} max-w-fit text-white px-6 py-2 rounded-full text-lg font-semibold transition-colors duration-300`}
-										/>
-									</div>
-								</div>
-							</Card>
-						))}
-					</div>
-				</section>
-
+	
 				{/* Best Tutors Section */}
+						{/*
 				<section
 					className={`${
 						isDarkMode ? "bg-gray-900" : "bg-white"
@@ -485,7 +384,7 @@ export default function LandingPage() {
 								/>
 							</button>
 						</div>
-						<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+						 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
 							{instructors.map((instructor) => (
 								<Card
 									key={instructor.name}
@@ -519,7 +418,7 @@ export default function LandingPage() {
 											className={`w-full ${
 												isDarkMode
 													? "bg-blue-600 hover:bg-blue-700"
-													: "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
+													: "bg-orange-500 hover:bg-orange-600"
 											} text-white py-2 rounded-full text-lg font-semibold transition-colors duration-300`}
 										/>
 									</div>
@@ -527,7 +426,7 @@ export default function LandingPage() {
 							))}
 						</div>
 					</div>
-				</section>
+				</section> */}
 
 				{/* Become a Mentor Section */}
 				<section
@@ -567,7 +466,7 @@ export default function LandingPage() {
 										className={`${
 											isDarkMode
 												? "bg-blue-600 hover:bg-blue-700"
-												: "bg-gradient-to-r from-[#ff6b35] to-[#ff8c35] hover:from-[#ff8c35] hover:to-[#ff6b35]"
+												: "bg-orange-500 hover:bg-orange-600"
 										} max-w-fit text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-300`}
 									/>
 								</div>
@@ -823,23 +722,5 @@ const teachingSteps = [
 	{
 		title: "Start earning",
 		description: "Get paid for every student who takes your course",
-	},
-];
-
-const instructors = [
-	{
-		name: "John Smith",
-		title: "Web Development Expert",
-		image: Instructor,
-	},
-	{
-		name: "Sarah Johnson",
-		title: "Data Science Specialist",
-		image: Instructor,
-	},
-	{
-		name: "Michael Brown",
-		title: "Mobile App Developer",
-		image: Instructor,
 	},
 ];

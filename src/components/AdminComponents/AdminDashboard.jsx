@@ -36,25 +36,25 @@ const AdminDashboard = () => {
             <StatCard
               icon={<Users className="h-6 w-6 text-indigo-600" />}
               title="Total Tutors"
-              value={totalStats.totalTutors}
+              value={totalStats?.totalTutors}
               color="bg-indigo-100"
             />
             <StatCard
               icon={<GraduationCap className="h-6 w-6 text-emerald-600" />}
               title="Total Students"
-              value={totalStats.totalStudents}
+              value={totalStats?.totalStudents}
               color="bg-emerald-100"
             />
             <StatCard
               icon={<BookOpen className="h-6 w-6 text-amber-600" />}
               title="Total Courses"
-              value={totalStats.totalCourses}
+              value={totalStats?.totalCourses}
               color="bg-amber-100"
             />
             <StatCard
               icon={<DollarSign className="h-6 w-6 text-rose-600" />}
               title="Total Revenue"
-              value={`$${totalStats.totalRevenue.toFixed(2)}`}
+              value={`$${totalStats?.totalRevenue?.toFixed(2)}`}
               color="bg-rose-100"
             />
           </>
@@ -72,25 +72,25 @@ const AdminDashboard = () => {
         ) : (
           <>
             <RecentActivityCard
-              title="Recent Tutors"
-              items={recentActivities.tutors.slice(0, 5)}
+              title="Recent Tutors Registration"
+              items={recentActivities?.tutors?.slice(0, 5)}
               color="bg-indigo-50"
               iconColor="text-indigo-600"
             />
             <RecentActivityCard
-              title="Recent Students"
-              items={recentActivities.students.slice(0, 5)}
+              title="Recent Students Registration"
+              items={recentActivities?.students?.slice(0, 5)}
               color="bg-emerald-50"
               iconColor="text-emerald-600"
             />
             <RecentActivityCard
               title="Recent Courses"
-              items={recentActivities.courses.slice(0, 5)}
+              items={recentActivities?.courses?.slice(0, 5)}
               color="bg-amber-50"
               iconColor="text-amber-600"
             />
             <RecentOrdersCard 
-              orders={recentActivities.orders.slice(0, 5)} 
+              orders={recentActivities?.orders?.slice(0, 5)} 
               color="bg-rose-50"
             />
           </>
@@ -107,7 +107,7 @@ const RecentActivityCard = ({ title, items, color, iconColor }) => (
     </CardHeader>
     <CardContent>
       <ScrollArea className="h-[300px]">
-        {items.map((item, index) => (
+        {items?.map((item, index) => (
           <div key={index} className="flex items-center space-x-4 mb-4 bg-white p-3 rounded-lg shadow-sm">
             <Avatar>
               <AvatarFallback className={`${iconColor} bg-opacity-20`}>
@@ -136,7 +136,7 @@ const RecentOrdersCard = ({ orders, color }) => (
     </CardHeader>
     <CardContent>
       <ScrollArea className="h-[300px]">
-        {orders.map((order, index) => (
+        {orders?.map((order, index) => (
           <div key={index} className="mb-4 p-4 bg-white rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-2">
               <p className="font-medium text-gray-800">{order?.studentName}</p>
@@ -152,7 +152,7 @@ const RecentOrdersCard = ({ orders, color }) => (
               {order?.courseTitles.join(", ")}
             </p>
             <div className="flex justify-between items-center">
-              <p className="text-sm font-medium text-gray-800">₹{order?.amount.toFixed(2)}</p>
+              <p className="text-sm font-medium text-gray-800">₹{order?.amount?.toFixed(2)}</p>
               <p className="text-xs text-gray-500">
                 {moment(order?.created_at).fromNow()}
               </p>

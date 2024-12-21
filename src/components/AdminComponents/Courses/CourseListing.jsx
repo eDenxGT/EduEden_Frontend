@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Search, RefreshCw } from 'lucide-react';
+import { Search, RefreshCw } from "lucide-react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CourseCard from "../../CommonComponents/CourseCard";
 import ConfirmationModal from "../../../utils/Modals/ConfirmtionModal";
@@ -15,7 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllCoursesForAdminSide, deleteCourseById, updateCourseStatus } from "@/api/backendCalls/course";
+import {
+  getAllCoursesForAdminSide,
+  deleteCourseById,
+  updateCourseStatus,
+} from "@/api/backendCalls/course";
 import { getAllCategories } from "@/api/backendCalls/category";
 import { CourseCardSkeleton } from "@/components/CommonComponents/Skeletons/CourseCardSkeleton";
 
@@ -39,29 +43,23 @@ const AdminCourseListing = () => {
     return response;
   };
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isError,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ['adminCourses', searchQuery, sortBy, category],
-    queryFn: fetchCourses,
-    getNextPageParam: (lastPage, pages) => {
-      if (lastPage?.length < 12) return undefined;
-      return pages?.length + 1;
-    },
-  });
+  const { data, fetchNextPage, hasNextPage, isFetching, isError, refetch } =
+    useInfiniteQuery({
+      queryKey: ["adminCourses", searchQuery, sortBy, category],
+      queryFn: fetchCourses,
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage?.length < 12) return undefined;
+        return pages?.length + 1;
+      },
+    });
 
   const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: getAllCategories,
   });
 
   const courses = data ? data?.pages?.flatMap((page) => page) : [];
-  console.log(courses, data)
+  console.log(courses, data);
 
   const handleSearchInputChange = (e) => {
     setSearchQuery(e.target.value);
@@ -89,7 +87,7 @@ const AdminCourseListing = () => {
 
   const handleCourseStatus = async (course_id) => {
     try {
-      console.log(course_id)
+      console.log(course_id);
       await updateCourseStatus(course_id);
       refetch();
     } catch (error) {
@@ -109,14 +107,19 @@ const AdminCourseListing = () => {
     }
   };
 
-  const isDarkMode = false; 
+  const isDarkMode = false;
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+    <div
+      className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"}`}
+    >
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
           <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
+            />
             <Input
               type="text"
               placeholder="Search in your courses..."
@@ -133,8 +136,12 @@ const AdminCourseListing = () => {
               <SelectContent>
                 <SelectItem value="latest">Latest</SelectItem>
                 <SelectItem value="oldest">Oldest</SelectItem>
-                <SelectItem value="price_low_to_high">Price: Low to High</SelectItem>
-                <SelectItem value="price_high_to_low">Price: High to Low</SelectItem>
+                <SelectItem value="price_low_to_high">
+                  Price: Low to High
+                </SelectItem>
+                <SelectItem value="price_high_to_low">
+                  Price: High to Low
+                </SelectItem>
               </SelectContent>
             </Select>
             <Select value={category} onValueChange={handleCategoryChange}>
@@ -196,7 +203,9 @@ const AdminCourseListing = () => {
                 courses?.map((course) => (
                   <CourseCard
                     key={course?.course_id}
-                    onClick={() => navigate(`/admin/courses/${course?.course_id}`)}
+                    onClick={() =>
+                      navigate(`/admin/courses/${course?.course_id}`)
+                    }
                     userRole="admin"
                     course={course}
                     deleteCourseById={(course_id) => {
@@ -234,4 +243,3 @@ const AdminCourseListing = () => {
 };
 
 export default AdminCourseListing;
-
