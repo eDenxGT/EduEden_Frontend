@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 import Cookies from "js-cookie";
 import { axiosInstance } from "../api/axiosConfig";
 
-const SOCKET_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
+const SOCKET_URL = import.meta.env.VITE_WEB_SOCKET_URL || "http://localhost:5000";
 
 const getAuthDetails = () => {
   const tutorToken = Cookies.get("tutor_access_token");
