@@ -134,22 +134,6 @@ const updateCourse = createAsyncThunk(
 	}
 );
 
-const deleteCourseById = createAsyncThunk(
-	"courses/deleteCourseById",
-	async (course_id, { rejectWithValue }) => {
-		try {
-			const response = await axiosInstance.delete(
-				`/courses/delete/${course_id}`
-			);
-			return response?.data?.course;
-		} catch (error) {
-			return rejectWithValue(
-				error?.response?.data?.message || "Failed to delete course."
-			);
-		}
-	}
-);
-
 const handleCourseStatus = createAsyncThunk(
 	"courses/handleCourseStatus",
 	async (course_id, { rejectWithValue }) => {
@@ -233,7 +217,6 @@ export {
 	fetchCourses,
 	fetchCoursesByCourseId,
 	updateCourse,
-	deleteCourseById,
 	handleCourseStatus,
 	fetchCoursesByStudentId,
 	fetchCourseProgressByStudentId,

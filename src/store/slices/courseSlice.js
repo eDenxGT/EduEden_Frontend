@@ -4,7 +4,6 @@ import {
 	fetchCourses,
 	fetchCoursesByCourseId,
 	updateCourse,
-	deleteCourseById,
 	handleCourseStatus,
 	fetchCoursesByStudentId,
 	fetchCourseProgressByStudentId,
@@ -70,20 +69,6 @@ const courseSlice = createSlice({
 				state.course = action.payload;
 			})
 			.addCase(updateCourse.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload;
-			})
-			.addCase(deleteCourseById.pending, (state) => {
-				state.loading = true;
-				state.error = null;
-			})
-			.addCase(deleteCourseById.fulfilled, (state, action) => {
-				state.loading = false;
-				state.courses = state.courses.filter(
-					(course) => course._id !== action.payload
-				);
-			})
-			.addCase(deleteCourseById.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.payload;
 			})
