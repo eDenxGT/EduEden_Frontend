@@ -49,6 +49,7 @@ const uploadVideoToCloudinary = async (file, params) => {
 	}
 };
 
+//* ====== Image Upload ====== *//
 const uploadImageToCloudinary = async (file, params) => {
    const { public_id_prefix, transformation, folder  } = params
 	try {
