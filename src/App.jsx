@@ -42,7 +42,6 @@ function App() {
           }
         />
 
-        {/* <Route path="/loading" element={<LoadingUi />} /> */}
         <Route path="/about-us" element={<AboutPage />} />
         <Route path="/contact-us" element={<ContactPage />} />
         <Route path="/*" element={<Error404Page />} />
