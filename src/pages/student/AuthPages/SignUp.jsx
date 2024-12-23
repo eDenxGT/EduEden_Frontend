@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import GirlRocket from "../../../assets/images/authPage/RocketGirlImage.png";
 import { PiGraduationCap } from "react-icons/pi";
 import InputField from "../../../components/CommonComponents/InputField";
@@ -177,8 +177,7 @@ const SignUp = () => {
     socket.auth.role = "student";
     socket.auth.token = accessToken;
     socket.connect();
-    // toast.success("Google sign-in was successful.");
-      navigate("/student/home");
+    navigate("/student/home");
   };
 
   const resendOtp = async () => {
@@ -203,51 +202,50 @@ const SignUp = () => {
 
   return (
     <>
-      <div className="flex justify-around items-center p-4 border-b border-gray-200">
-        <div className="flex items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+        <div className="flex items-center mb-4 sm:mb-0">
           <PiGraduationCap className="h-6 w-6 text-[#ff5722]" />
           <span className="ml-2 text-xl font-semibold">
             <span className="text-gray-900">Edu</span>
             <span className="text-[#ff5722]">Eden</span>
           </span>
         </div>
-        <div className="text-sm">
-          Already have an account?
+        <div className="text-sm flex items-center">
+          <span className="mr-2">Already have an account?</span>
           <button
             onClick={toSignIn}
-            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 ml-4 rounded"
+            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 rounded"
           >
             Login
           </button>
         </div>
       </div>
 
-      <div className="min-h-screen flex">
+      <div className="min-h-screen flex flex-col lg:flex-row">
         <div className="hidden lg:flex lg:w-1/2 bg-[#ebebff] items-center justify-center">
           <img src={GirlRocket} alt="Illustration" className="max-w-[28rem]" />
         </div>
 
-        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
-          <div className="max-w-[28rem] w-full mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">
+        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+          <div className="w-full max-w-[28rem] mx-auto">
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">
               Create your account
             </h1>
 
-            <form className="flex flex-col gap-0.5" onSubmit={handleSubmit}>
-              <div>
-                <div className="mb-6">
-                  <GoogleAuthButton
-                    onSuccessRedirect={onGoogleSignUpSuccess}
-                    role={"student"}
-                    isDarkMode={isDarkMode}
-                  />
-                </div>
-                <div className="flex items-center justify-center text-base font-semibold text-gray-600">
-                  <div className="flex-grow border-t border-gray-300"></div>
-                  <span className="px-2">OR</span>
-                  <div className="flex-grow border-t border-gray-300"></div>
-                </div>
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              <div className="mb-6">
+                <GoogleAuthButton
+                  onSuccessRedirect={onGoogleSignUpSuccess}
+                  role={"student"}
+                  isDarkMode={isDarkMode}
+                />
               </div>
+              <div className="flex items-center justify-center text-base font-semibold text-gray-600 mb-6">
+                <div className="flex-grow border-t border-gray-300"></div>
+                <span className="px-2">OR</span>
+                <div className="flex-grow border-t border-gray-300"></div>
+              </div>
+
               <div className="relative">
                 <InputField
                   label="Full Name"
@@ -258,10 +256,7 @@ const SignUp = () => {
                   error={errors.full_name}
                 />
                 {errors.full_name && (
-                  <span
-                    className="text-xs text-red-600 absolute bottom-[0.65rem] right-[0.4rem]
-"
-                  >
+                  <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                     {errors.full_name}
                   </span>
                 )}
@@ -277,7 +272,7 @@ const SignUp = () => {
                   error={errors.user_name}
                 />
                 {errors.user_name && (
-                  <span className="text-xs text-red-600 absolute bottom-[0.65rem] right-[0.4rem]">
+                  <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                     {errors.user_name}
                   </span>
                 )}
@@ -294,8 +289,7 @@ const SignUp = () => {
                   error={errors.email}
                 />
                 {errors.email && (
-                  <span className="text-xs text-red-600 absolute bottom-[0.65rem] right-[0.4rem]">
-                    {" "}
+                  <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                     {errors.email}
                   </span>
                 )}
@@ -312,14 +306,13 @@ const SignUp = () => {
                   error={errors.phone}
                 />
                 {errors.phone && (
-                  <span className="text-xs text-red-600 absolute bottom-[0.65rem] right-[0.4rem]">
-                    {" "}
+                  <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                     {errors.phone}
                   </span>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative">
                   <InputField
                     name="password"
@@ -333,7 +326,7 @@ const SignUp = () => {
                     error={errors.password}
                   />
                   {errors.password && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.password}
                     </span>
                   )}
@@ -354,14 +347,14 @@ const SignUp = () => {
                     error={errors.confirmPassword}
                   />
                   {errors.confirmPassword && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.confirmPassword}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center mt-5 mb-1">
+              <div className="flex items-center mt-4 mb-6">
                 <input
                   type="checkbox"
                   className="h-4 w-4 text-[#ff5722] border-gray-300 focus:ring-[#ff5722]"
@@ -415,3 +408,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
