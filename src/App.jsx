@@ -15,10 +15,12 @@ import LoadingUi from "./utils/Modals/LoadingUi";
 import SpinnerLoadingModal from "./utils/Modals/SpinnerLoadingModal";
 import ContactPage from "./pages/Others/ContactUs";
 import AboutPage from "./pages/Others/AboutUs";
+import ScrollToTop from "./utils/ScrollToTop";
 
 function App() {
   return (
     <Router>
+    <ScrollToTop />
       <Toaster2 position="top-right" richColors />
       <Routes>
         <Route path="/" element={<PublicRoutes />} />
