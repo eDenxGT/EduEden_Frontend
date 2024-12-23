@@ -3,7 +3,7 @@ import { PiGraduationCap } from "react-icons/pi";
 import InputField from "../../../components/CommonComponents/InputField";
 import Button from "../../../components/CommonComponents/Button";
 import BoyPcImage from "../../../assets/images/authPage/BoyPcImage.png";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiLock, FiMail } from "react-icons/fi";
 import { axiosInstance } from "../../../api/axiosConfig";
 import { Link, useNavigate } from "react-router-dom";
 import Spinner from "../../../utils/Spinner/Spinner";
@@ -228,6 +228,7 @@ const SignIn = () => {
                   label="Email"
                   placeholder="Username or email address..."
                   name="email"
+                  icon={<FiMail className="text-gray-400" />}
                   onChange={handleChange}
                 />
                 {errors.email && (
@@ -242,6 +243,7 @@ const SignIn = () => {
                   onChange={handleChange}
                   label="Password"
                   placeholder="Password"
+                  icon={<FiLock className="text-gray-400" />}
                   name="password"
                   showPassword={showPassword}
                   setShowPassword={() => setShowPassword(!showPassword)}

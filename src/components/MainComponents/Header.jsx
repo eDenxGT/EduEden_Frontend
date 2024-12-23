@@ -276,18 +276,18 @@ const Header = ({ role }) => {
             : "bg-white border-gray-200"
         } border-b transition-colors duration-300 fixed top-0 left-0 right-0 z-40`}
       >
-        <div className="mx-auto px-6">
-          <div className="flex items-center h-16">
+        <div className="mx-auto px-2 sm:px-6">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Hamburger menu button */}
             <button
-              className="mr-2 text-gray-500 hover:text-gray-700"
+              className="p-2 rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF5722]"
               onClick={toggleSidebar}
             >
-              <Menu className="h-6 w-6 mr-1" />
+              <Menu className="h-6 w-6" />
             </button>
 
             {/* Left section */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 ml-2">
               <PiGraduationCap className="h-6 w-6 text-[#FF5722]" />
               <Link
                 to={
@@ -301,7 +301,7 @@ const Header = ({ role }) => {
                 }
               >
                 <span
-                  className={`text-2xl font-bold ${
+                  className={`text-xl sm:text-2xl font-bold ${
                     toggleTheme ? "text-white" : "text-gray-900"
                   }`}
                 >
@@ -340,7 +340,7 @@ const Header = ({ role }) => {
                 >
                   <Bell className="h-5 w-5" />
                 </button> */}
-                {(role === "student") && (
+                {role === "student" && (
                   <>
                     {/* <button
                       onClick={() =>
@@ -430,7 +430,9 @@ const Header = ({ role }) => {
                   </div>
                 ) : (
                   <Link to="/student/signup">
-                    <Button className={`bg-[#ff662e] text-white font-semibold`}>Create Account</Button>
+                    <Button className={`bg-[#ff662e] text-white font-semibold`}>
+                      Create Account
+                    </Button>
                   </Link>
                 )}
               </div>

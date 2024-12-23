@@ -1,18 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TutorImage from "../../../assets/images/authPage/RocketGirlImage.png";
 import { PiGraduationCap } from "react-icons/pi";
+import { FiUser, FiMail, FiPhone, FiBook, FiBriefcase, FiLock, FiArrowRight } from "react-icons/fi";
 import InputField from "../../../components/CommonComponents/InputField";
 import Button from "../../../components/CommonComponents/Button";
 import { axiosInstance } from "../../../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../../../utils/Spinner/Spinner";
-import { FiArrowRight } from "react-icons/fi";
 import { toast } from "sonner";
 import OtpVerificationModal from "../../../utils/Modals/OtpVerificationModal";
-// import GoogleAuthButton from "../../../utils/GoogleAuth/GoogleAuthButton";
-// import { useDispatch } from "react-redux";
-// import { tutorLogin } from "../../../store/slices/tutorSlice";
-// import storeAccessToken from "../../../api/storeAccessToken";
 
 const TutorSignup = () => {
   const [formData, setFormData] = useState({
@@ -146,7 +142,7 @@ const TutorSignup = () => {
     setOtpModalOpen(false);
     localStorage.removeItem("isOtpModalOpen");
     localStorage.removeItem("formEmail");
-	localStorage.removeItem("otpTimestamp");
+    localStorage.removeItem("otpTimestamp");
   };
 
   const handleOtpVerify = async (otpString) => {
@@ -163,7 +159,7 @@ const TutorSignup = () => {
         setOtpModalOpen(false);
         localStorage.removeItem("isOtpModalOpen");
         localStorage.removeItem("formEmail");
-		localStorage.removeItem("otpTimestamp");
+        localStorage.removeItem("otpTimestamp");
         setTimeout(() => {
           navigate("/tutor/signin");
         }, 2000);
@@ -175,6 +171,7 @@ const TutorSignup = () => {
       setIsLoadingOtp(false);
     }
   };
+
   const resendOtp = async () => {
     try {
       const response = await axiosInstance.post("auth/resend-otp", {
@@ -197,26 +194,26 @@ const TutorSignup = () => {
 
   return (
     <>
-      <div className="flex justify-around items-center p-4 border-b border-gray-200">
-        <div className="flex items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+        <div className="flex items-center mb-4 sm:mb-0">
           <PiGraduationCap className="h-6 w-6 text-[#ff5722]" />
           <span className="ml-2 text-xl font-semibold">
             <span className="text-gray-900">Edu</span>
             <span className="text-[#ff5722]">Eden</span>
           </span>
         </div>
-        <div className="text-sm">
-          Already have a tutor account?
+        <div className="text-sm flex items-center">
+          <span className="mr-2">Already have a tutor account?</span>
           <button
             onClick={toTutorSignIn}
-            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 ml-4 rounded"
+            className="bg-[#ffeee8] text-[#ff5722] px-4 py-2 rounded"
           >
             Login
           </button>
         </div>
       </div>
 
-      <div className=" min-h-screen flex">
+      <div className="min-h-screen flex flex-col lg:flex-row">
         <div className="hidden lg:flex lg:w-1/2 bg-[#ebebff] items-center justify-center">
           <img
             src={TutorImage}
@@ -225,14 +222,14 @@ const TutorSignup = () => {
           />
         </div>
 
-        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
-          <div className="max-w-[28rem] w-full mx-auto">
-            <h1 className="text-2xl text-center font-bold text-gray-900 mb-3">
+        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+          <div className="w-full max-w-[28rem] mx-auto">
+            <h1 className="text-2xl text-center font-bold text-gray-900 mb-6">
               Apply to become a tutor
             </h1>
 
-            <form className="flex flex-col gap-0.5" onSubmit={handleSubmit}>
-              <div className="flex gap-4">
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative">
                   <InputField
                     label="Full Name"
@@ -241,9 +238,10 @@ const TutorSignup = () => {
                     value={formData.full_name}
                     onChange={handleChange}
                     error={errors.full_name}
+                    icon={<FiUser className="text-gray-400" />}
                   />
                   {errors.full_name && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.full_name}
                     </span>
                   )}
@@ -257,9 +255,10 @@ const TutorSignup = () => {
                     value={formData.user_name}
                     onChange={handleChange}
                     error={errors.user_name}
+                    icon={<FiUser className="text-gray-400" />}
                   />
                   {errors.user_name && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.user_name}
                     </span>
                   )}
@@ -275,9 +274,10 @@ const TutorSignup = () => {
                   value={formData.email}
                   onChange={handleChange}
                   error={errors.email}
+                  icon={<FiMail className="text-gray-400" />}
                 />
                 {errors.email && (
-                  <span className="text-xs text-red-600 absolute bottom-[0.65rem] right-[0.4rem]">
+                  <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                     {errors.email}
                   </span>
                 )}
@@ -292,15 +292,16 @@ const TutorSignup = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   error={errors.phone}
+                  icon={<FiPhone className="text-gray-400" />}
                 />
                 {errors.phone && (
-                  <span className="text-xs text-red-600 absolute bottom-[0.65rem] right-[0.4rem]">
+                  <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                     {errors.phone}
                   </span>
                 )}
               </div>
 
-              <div className="flex gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative">
                   <InputField
                     label="Field"
@@ -309,9 +310,10 @@ const TutorSignup = () => {
                     value={formData.field_name}
                     onChange={handleChange}
                     error={errors.field_name}
+                    icon={<FiBook className="text-gray-400" />}
                   />
                   {errors.field_name && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.field_name}
                     </span>
                   )}
@@ -326,16 +328,17 @@ const TutorSignup = () => {
                     value={formData.experience}
                     onChange={handleChange}
                     error={errors.experience}
+                    icon={<FiBriefcase className="text-gray-400" />}
                   />
                   {errors.experience && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.experience}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative">
                   <InputField
                     name="password"
@@ -347,9 +350,10 @@ const TutorSignup = () => {
                     showPassword={showPassword}
                     setShowPassword={() => setShowPassword(!showPassword)}
                     error={errors.password}
+                    icon={<FiLock className="text-gray-400" />}
                   />
                   {errors.password && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.password}
                     </span>
                   )}
@@ -368,16 +372,17 @@ const TutorSignup = () => {
                       setShowConfirmPassword(!showConfirmPassword)
                     }
                     error={errors.confirmPassword}
+                    icon={<FiLock className="text-gray-400" />}
                   />
                   {errors.confirmPassword && (
-                    <span className="text-xs text-red-600 absolute -bottom-4 left-0">
+                    <span className="text-xs text-red-600 absolute -bottom-5 left-0">
                       {errors.confirmPassword}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center mt-5 mb-1">
+              <div className="flex items-center mt-4 mb-6">
                 <input
                   type="checkbox"
                   className="h-4 w-4 text-[#ff5722] border-gray-300 focus:ring-[#ff5722]"
@@ -396,7 +401,7 @@ const TutorSignup = () => {
               <Button
                 type="submit"
                 text={isLoading ? "" : "Submit"}
-                className="flex items-center justify-center gap-2 shadow-md"
+                className="flex items-center justify-center gap-2 shadow-md w-full"
                 disabled={
                   !isFormValid ||
                   !formData.full_name ||
@@ -433,3 +438,4 @@ const TutorSignup = () => {
 };
 
 export default TutorSignup;
+

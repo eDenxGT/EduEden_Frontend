@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import GirlRocket from "../../../assets/images/authPage/RocketGirlImage.png";
 import { PiGraduationCap } from "react-icons/pi";
 import InputField from "../../../components/CommonComponents/InputField";
@@ -6,7 +6,7 @@ import Button from "../../../components/CommonComponents/Button";
 import { axiosInstance } from "../../../api/axiosConfig";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../../../utils/Spinner/Spinner";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiLock, FiMail, FiPhone, FiUser } from "react-icons/fi";
 import OtpVerificationModal from "../../../utils/Modals/OtpVerificationModal";
 import GoogleAuthButton from "../../../utils/GoogleAuth/GoogleAuthButton";
 import { toast } from "sonner";
@@ -254,6 +254,7 @@ const SignUp = () => {
                   value={formData.full_name}
                   onChange={handleChange}
                   error={errors.full_name}
+                  icon={<FiUser className="text-gray-400" />}
                 />
                 {errors.full_name && (
                   <span className="text-xs text-red-600 absolute -bottom-5 left-0">
@@ -270,6 +271,7 @@ const SignUp = () => {
                   value={formData.user_name}
                   onChange={handleChange}
                   error={errors.user_name}
+                  icon={<FiUser className="text-gray-400" />}
                 />
                 {errors.user_name && (
                   <span className="text-xs text-red-600 absolute -bottom-5 left-0">
@@ -287,6 +289,7 @@ const SignUp = () => {
                   value={formData.email}
                   onChange={handleChange}
                   error={errors.email}
+                  icon={<FiMail className="text-gray-400" />}
                 />
                 {errors.email && (
                   <span className="text-xs text-red-600 absolute -bottom-5 left-0">
@@ -304,6 +307,7 @@ const SignUp = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   error={errors.phone}
+                  icon={<FiPhone className="text-gray-400" />}
                 />
                 {errors.phone && (
                   <span className="text-xs text-red-600 absolute -bottom-5 left-0">
@@ -324,6 +328,7 @@ const SignUp = () => {
                     showPassword={showPassword}
                     setShowPassword={() => setShowPassword(!showPassword)}
                     error={errors.password}
+                    icon={<FiLock className="text-gray-400" />}
                   />
                   {errors.password && (
                     <span className="text-xs text-red-600 absolute -bottom-5 left-0">
@@ -345,6 +350,7 @@ const SignUp = () => {
                       setShowConfirmPassword(!showConfirmPassword)
                     }
                     error={errors.confirmPassword}
+                    icon={<FiLock className="text-gray-400" />}
                   />
                   {errors.confirmPassword && (
                     <span className="text-xs text-red-600 absolute -bottom-5 left-0">
@@ -408,4 +414,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
