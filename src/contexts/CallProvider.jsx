@@ -74,12 +74,29 @@ export const CallProvider = ({ children }) => {
         trickle: false,
         stream: streamRef.current,
         config: {
-          iceServers: [
-            { urls: "stun:stun.l.google.com:19302" },
-            { urls: "stun:stun.l.google.com:5349" },
-            { urls: "stun:stun2.l.google.com:19302" },
-            { urls: "stun:stun4.l.google.com:19302" },
-          ],
+            // iceServers: [
+            //   { urls: "stun:stun.l.google.com:19302" },
+            //   { urls: "stun:stun.l.google.com:5349" },
+            //   { urls: "stun:stun2.l.google.com:19302" },
+            //   { urls: "stun:stun4.l.google.com:19302" },
+            // ],
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:stun1.l.google.com:19302' },
+              { urls: 'stun:stun2.l.google.com:19302' },
+              { urls: 'stun:stun3.l.google.com:19302' },
+              { urls: 'stun:stun4.l.google.com:19302' },
+              {
+                url: 'turn:turn.bistri.com:80',
+                credential: 'homeo',
+                username: 'homeo',
+              },
+              {
+                url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+                credential: 'webrtc',
+                username: 'webrtc',
+              },
+            ]
         },
       });
       peer.on("signal", (data) => {
@@ -117,12 +134,29 @@ export const CallProvider = ({ children }) => {
           trickle: false,
           stream: streamRef.current,
           config: {
+            // iceServers: [
+            //   { urls: "stun:stun.l.google.com:19302" },
+            //   { urls: "stun:stun.l.google.com:5349" },
+            //   { urls: "stun:stun2.l.google.com:19302" },
+            //   { urls: "stun:stun4.l.google.com:19302" },
+            // ],
             iceServers: [
-              { urls: "stun:stun.l.google.com:19302" },
-              { urls: "stun:stun.l.google.com:5349" },
-              { urls: "stun:stun2.l.google.com:19302" },
-              { urls: "stun:stun4.l.google.com:19302" },
-            ],
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun4.l.google.com:19302' },
+    {
+      url: 'turn:turn.bistri.com:80',
+      credential: 'homeo',
+      username: 'homeo',
+    },
+    {
+      url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+      credential: 'webrtc',
+      username: 'webrtc',
+    },
+  ]
           },
         });
         peer.on("signal", (signalData) => {
