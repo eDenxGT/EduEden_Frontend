@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, Smile, Loader2 } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 import { axiosInstance } from "@/api/axiosConfig";
+import { matchPath, useLocation } from "react-router-dom";
 
 const EthenAI = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const EthenAI = () => {
   const scrollAreaRef = useRef(null);
   const chatRef = useRef(null);
   const inputRef = useRef(null);
+  const location = useLocation();
 
   const MAX_MESSAGE_LENGTH = 100;
 
@@ -43,6 +45,17 @@ const EthenAI = () => {
     };
   }, []);
 
+  const hidePaths = [
+    "/student/my-courses/:course_id/quiz/:quiz_id",
+    "/student/my-courses/:course_id/quiz/:quiz_id/result",
+  ];
+
+  const shouldHide = hidePaths.some((path) => matchPath({ path, end: true }, location.pathname));
+
+  if (shouldHide) {
+    return null;
+  }
+
   const toggleChat = () => setIsOpen(!isOpen);
 
   const handleSendMessage = async () => {
@@ -56,7 +69,7 @@ const EthenAI = () => {
         const response = await axiosInstance.post("/chats/ethen-ai", {
           message: userMessage,
         });
-console.log(response)
+        // console.log(response);
         if (response.status !== 200) {
           throw new Error("Failed to fetch chatbot response");
         }
@@ -115,7 +128,7 @@ console.log(response)
     const formattedText = message.text.split("\n")?.map((line, i) => (
       <React.Fragment key={i}>
         {line}
-        {i !== (message.text.split("\n").length - 1) && <br />}
+        {i !== message.text.split("\n").length - 1 && <br />}
       </React.Fragment>
     ));
 
@@ -155,8 +168,15 @@ console.log(response)
     );
   };
 
+  const chatPaths = [
+    "/student/chat",
+    "/tutor/chat",
+  ];
+
+  const isChatPath = chatPaths.some((path) => matchPath({ path, end: true }, location.pathname));
+
   return (
-    <div ref={chatRef} className="fixed bottom-4 right-4 z-50">
+    <div ref={chatRef} className={`fixed ${isChatPath ? "bottom-14" : "bottom-4"} right-4 z-50`}>
       {!isOpen && (
         <button
           onClick={toggleChat}
