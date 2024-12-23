@@ -119,7 +119,7 @@ export function ChatHeader({ conversation, role }) {
             >
               <Video className="h-6 w-6" />
             </Button>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   className="hover:text-orange-500 font-semibold "
@@ -155,7 +155,7 @@ export function ChatHeader({ conversation, role }) {
                   <span>Delete Chat</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
 
           <AlertDialog
