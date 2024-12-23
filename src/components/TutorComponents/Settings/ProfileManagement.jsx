@@ -1034,18 +1034,19 @@ const ProfileManagement = () => {
 							<Button
 								type="submit"
 								className="bg-[#FF5722] text-white hover:bg-[#F4511E]"
-								disabled={
-									!isFormValid ||
-									formData.confirmPassword !==
-										formData.newPassword ||
-									(formData.newPassword.length > 0 &&
-										formData.currentPassword.length ===
-											0) ||
-									(formData.email !== tutorData.email &&
-										!verifiedFields.email) ||
-									(formData.phone !== tutorData.phone &&
-										!verifiedFields.phone)
-								}>
+								// disabled={
+								// 	!isFormValid ||
+								// 	formData.confirmPassword !==
+								// 		formData.newPassword ||
+								// 	(formData.newPassword.length > 0 &&
+								// 		formData.currentPassword.length ===
+								// 			0) ||
+								// 	(formData.email !== tutorData.email &&
+								// 		!verifiedFields.email) ||
+								// 	(formData.phone !== tutorData.phone &&
+								// 		!verifiedFields.phone)
+								// }
+								>
 								Save Changes
 							</Button>
 						</div>

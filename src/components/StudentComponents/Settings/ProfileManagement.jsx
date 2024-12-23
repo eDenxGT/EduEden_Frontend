@@ -769,13 +769,14 @@ const StudentProfileManagement = () => {
 							<Button
 								type="submit"
 								className="bg-[#FF5722] text-white hover:bg-[#F4511E]"
-								disabled={
-									!isFormValid ||
-									formData.confirmPassword !==
-										formData.newPassword ||
-									(formData.newPassword.length > 0 &&
-										formData.currentPassword.length === 0)
-								}>
+								// disabled={
+								// 	!isFormValid ||
+								// 	formData.confirmPassword !==
+								// 		formData.newPassword ||
+								// 	(formData.newPassword.length > 0 &&
+								// 		formData.currentPassword.length === 0)
+								// }
+								>
 								Save Changes
 							</Button>
 						</div>
