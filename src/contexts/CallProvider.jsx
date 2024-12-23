@@ -1,12 +1,6 @@
 /* eslint-disable react/prop-types */
 import socket from "@/Services/Socket";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import SimplePeer from "simple-peer/simplepeer.min";
 
 const CallContext = createContext();
@@ -74,29 +68,37 @@ export const CallProvider = ({ children }) => {
         trickle: false,
         stream: streamRef.current,
         config: {
-            // iceServers: [
-            //   { urls: "stun:stun.l.google.com:19302" },
-            //   { urls: "stun:stun.l.google.com:5349" },
-            //   { urls: "stun:stun2.l.google.com:19302" },
-            //   { urls: "stun:stun4.l.google.com:19302" },
-            // ],
-            iceServers: [
-              { urls: 'stun:stun.l.google.com:19302' },
-              { urls: 'stun:stun1.l.google.com:19302' },
-              { urls: 'stun:stun2.l.google.com:19302' },
-              { urls: 'stun:stun3.l.google.com:19302' },
-              { urls: 'stun:stun4.l.google.com:19302' },
-              {
-                url: 'turn:turn.bistri.com:80',
-                credential: 'homeo',
-                username: 'homeo',
-              },
-              {
-                url: 'turn:turn.anyfirewall.com:443?transport=tcp',
-                credential: 'webrtc',
-                username: 'webrtc',
-              },
-            ]
+          // iceServers: [
+          //   { urls: "stun:stun.l.google.com:19302" },
+          //   { urls: "stun:stun.l.google.com:5349" },
+          //   { urls: "stun:stun2.l.google.com:19302" },
+          //   { urls: "stun:stun4.l.google.com:19302" },
+          // ],
+          iceServers: [
+            {
+              urls: "stun:stun.relay.metered.ca:80",
+            },
+            {
+              urls: "turn:global.relay.metered.ca:80",
+              username: "e84a04447223b517af7157f8",
+              credential: "lKXL2Abf2eAFWAOf",
+            },
+            {
+              urls: "turn:global.relay.metered.ca:80?transport=tcp",
+              username: "e84a04447223b517af7157f8",
+              credential: "lKXL2Abf2eAFWAOf",
+            },
+            {
+              urls: "turn:global.relay.metered.ca:443",
+              username: "e84a04447223b517af7157f8",
+              credential: "lKXL2Abf2eAFWAOf",
+            },
+            {
+              urls: "turns:global.relay.metered.ca:443?transport=tcp",
+              username: "e84a04447223b517af7157f8",
+              credential: "lKXL2Abf2eAFWAOf",
+            },
+          ],
         },
       });
       peer.on("signal", (data) => {
@@ -141,22 +143,30 @@ export const CallProvider = ({ children }) => {
             //   { urls: "stun:stun4.l.google.com:19302" },
             // ],
             iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' },
-    { urls: 'stun:stun3.l.google.com:19302' },
-    { urls: 'stun:stun4.l.google.com:19302' },
-    {
-      url: 'turn:turn.bistri.com:80',
-      credential: 'homeo',
-      username: 'homeo',
-    },
-    {
-      url: 'turn:turn.anyfirewall.com:443?transport=tcp',
-      credential: 'webrtc',
-      username: 'webrtc',
-    },
-  ]
+              {
+                urls: "stun:stun.relay.metered.ca:80",
+              },
+              {
+                urls: "turn:global.relay.metered.ca:80",
+                username: "e84a04447223b517af7157f8",
+                credential: "lKXL2Abf2eAFWAOf",
+              },
+              {
+                urls: "turn:global.relay.metered.ca:80?transport=tcp",
+                username: "e84a04447223b517af7157f8",
+                credential: "lKXL2Abf2eAFWAOf",
+              },
+              {
+                urls: "turn:global.relay.metered.ca:443",
+                username: "e84a04447223b517af7157f8",
+                credential: "lKXL2Abf2eAFWAOf",
+              },
+              {
+                urls: "turns:global.relay.metered.ca:443?transport=tcp",
+                username: "e84a04447223b517af7157f8",
+                credential: "lKXL2Abf2eAFWAOf",
+              },
+            ],
           },
         });
         peer.on("signal", (signalData) => {
@@ -211,16 +221,16 @@ export const CallProvider = ({ children }) => {
       setIsVisible(false);
       setIsFullScreen(false);
       setCallerData(null);
-  
+
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => {
-          track.stop(); 
+          track.stop();
         });
-        streamRef.current = null; 
+        streamRef.current = null;
       }
-  
+
       destroyConnection(connectionRef);
-  
+
       if (incomingCallInfo?.from) {
         socket.emit("endCall", { to: incomingCallInfo.from });
       }
@@ -228,7 +238,7 @@ export const CallProvider = ({ children }) => {
       console.log("Error in end call", error);
     }
   };
-  
+
   const handleIncomingCall = ({ from, signalData, callerData }) => {
     console.log("Incoming call from:", from, signalData);
     setIncomingCallInfo({
