@@ -252,7 +252,7 @@ export default function LandingPage() {
                           isDarkMode ? "text-white" : "text-gray-800"
                         }`}
                       >
-                        {course.average_rating}
+                        {course.average_rating.toFixed(1)}
                       </span>
                       <span
                         className={`text-sm sm:text-base ${
@@ -345,7 +345,7 @@ export default function LandingPage() {
                             isDarkMode ? "text-white" : "text-gray-800"
                           }`}
                         >
-                          {course?.average_rating}
+                          {course?.average_rating.toFixed(1)}
                         </span>
                         <span
                           className={`${
