@@ -38,7 +38,7 @@ const AdminCourseListing = () => {
       sort: sortBy,
       category: category,
       page: pageParam,
-      limit: 12,
+      limit: 4,
     });
     return response;
   };
@@ -48,7 +48,7 @@ const AdminCourseListing = () => {
       queryKey: ["adminCourses", searchQuery, sortBy, category],
       queryFn: fetchCourses,
       getNextPageParam: (lastPage, pages) => {
-        if (lastPage?.length < 12) return undefined;
+        if (lastPage?.length < 4) return undefined;
         return pages?.length + 1;
       },
     });
