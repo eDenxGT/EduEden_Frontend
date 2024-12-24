@@ -31,7 +31,7 @@ const EditCourseLayout = () => {
 		const fetchCourseDetails = async () => {
 			try {
 				const course = await dispatch(
-					fetchCoursesByCourseId(course_id)
+					fetchCoursesByCourseId({course_id, role:"tutor" })
 				).unwrap();
 
 				dispatch(setInitialData(course));
