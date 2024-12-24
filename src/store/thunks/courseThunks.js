@@ -78,12 +78,12 @@ const fetchCourses = createAsyncThunk(
 
 const fetchCoursesByCourseId = createAsyncThunk(
 	"courses/fetchCoursesByCourseId",
-	async (course_id, { rejectWithValue }) => {
+	async ({course_id, role}, { rejectWithValue }) => {
 		console.log(course_id);
 
 		try {
 			const response = await axiosInstance.get(
-				`/courses/get/${course_id}`
+				`/courses/get/${course_id}?role=${role}`
 			);
 			return response?.data?.course;
 		} catch (error) {
