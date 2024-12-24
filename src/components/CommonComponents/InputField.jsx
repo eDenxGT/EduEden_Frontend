@@ -12,6 +12,7 @@ const InputField = ({
 	name,
 	icon,
    className,
+	defaultValue,
 	labelAndInputClassName
 }) => {
 	return (
@@ -30,6 +31,7 @@ const InputField = ({
 					}
 					placeholder={placeholder}
 					value={value}
+					defaultValue={defaultValue}
 					onChange={onChange}
 					name={name}
 					className={`w-full px-3 pl-8 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF5722] focus:border-transparent pr-10 transition-all duration-300 ease-in-out ${className} `}
