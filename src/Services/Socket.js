@@ -44,7 +44,7 @@ socket.on("connect_error", (error) => {
   //   Cookies.remove("studentRefreshToken");
   //   Cookies.remove("student_access_token");
   //   window.location.href =
-  //     role === "tutor" ? "/tutor/signin" : "/student/signin";
+  //      role === "tutor" ? "/tutor/signin" : "/student/signin";
   // }
   console.log("Connection error", error)
 });
