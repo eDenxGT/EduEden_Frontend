@@ -18,10 +18,12 @@ const RazorpayButton = ({
 }) => {
   const { Razorpay } = useRazorpay();
   const dispatch = useDispatch();
-  const isPaymentFailedRef = useRef(false); 
+  const isPaymentFailedRef = useRef(false);
 
   const handlePayment = async () => {
-    onClick();
+    if (onClick) {
+      onClick();
+    }
     try {
       const { data } = await axiosInstance.post("/payment/create-order", {
         amount: Math.round(amount * 100),
@@ -43,7 +45,7 @@ const RazorpayButton = ({
 
         handler: async (response) => {
           try {
-            console.log(response)
+            console.log(response);
             isPaymentFailedRef.current = false;
             const verificationData = {
               razorpay_order_id: response.razorpay_order_id,
@@ -115,13 +117,17 @@ const RazorpayButton = ({
         });
 
         if (reason === "payment_failed") {
-          toast.error(description || "Payment failed. Please try another method.");
+          toast.error(
+            description || "Payment failed. Please try another method."
+          );
         } else if (reason === "payment_authorization") {
           toast.error(
             "Your payment was declined by the bank. Please try another method."
           );
         } else {
-          toast.error(description || "An unexpected error occurred during payment.");
+          toast.error(
+            description || "An unexpected error occurred during payment."
+          );
         }
 
         // razorpayInstance.close();
