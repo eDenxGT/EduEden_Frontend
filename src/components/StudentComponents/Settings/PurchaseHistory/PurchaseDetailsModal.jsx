@@ -12,9 +12,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "@/lib/helpers";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import RazorpayButton from "@/Services/Payment";
+import { toast } from "sonner";
 
 export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
+  const navigate = useNavigate();
+  const { user_id } = useSelector((state) => state.student.studentData);
 
   useEffect(() => {
     setIsModalOpen(isOpen);
@@ -24,6 +30,16 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
   const handleClose = () => {
     setIsModalOpen(false);
     onClose();
+  };
+
+  const handlePaymentSuccess = () => {
+    if (purchase.course_details?.length > 1) {
+      navigate(`/student/my-courses`);
+    } else if (purchase.course_details?.length === 1) {
+      navigate(`/student/my-courses/${purchase.course_details[0]?.course_id}`);
+    }
+    toast.success("Re-order completed!");
+    handleClose();
   };
 
   if (!purchase) return null;
@@ -54,7 +70,11 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
           </div>
           <div className="grid grid-cols-2 items-center gap-4">
             <span className="font-semibold">Status:</span>
-            <Badge className={`${getStatusColor(purchase.status)} max-w-fit text-white`}>
+            <Badge
+              className={`${getStatusColor(
+                purchase.status
+              )} max-w-fit text-white`}
+            >
               {purchase.status}
             </Badge>
           </div>
@@ -95,7 +115,23 @@ export default function PurchaseDetailsModal({ isOpen, onClose, purchase }) {
           )}
         </div>
         <DialogFooter>
-          <Button onClick={handleClose}>Close</Button>
+          {purchase.status === "cancelled" && (
+            <RazorpayButton
+              onClick={handleClose}
+              courses={purchase.course_details}
+              student_id={user_id}
+              amount={purchase.amount}
+              className="bg-orange-500 hover:bg-orange-600 text-white py-1 px-2 rounded  text-lg font-semibold"
+              handleSuccess={handlePaymentSuccess}
+              button_text="Re-order"
+            />
+          )}
+          <Button
+            onClick={handleClose}
+            className="bg-gray-500 hover:bg-gray-600 text-white py-1 px-2 rounded  text-lg font-semibold"
+          >
+            Close
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

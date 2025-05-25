@@ -6,7 +6,7 @@ const Certificate = ({
 	courseName,
 	completionDate,
 	certificateId,
-	companyCEO = "Aadil",
+	companyCEO = "eDen",
 }) => {
 	console.log(courseName)
 	return (

@@ -13,12 +13,15 @@ const RazorpayButton = ({
   amount,
   className,
   handleSuccess,
+  button_text,
+  onClick,
 }) => {
   const { Razorpay } = useRazorpay();
   const dispatch = useDispatch();
   const isPaymentFailedRef = useRef(false); 
 
   const handlePayment = async () => {
+    onClick();
     try {
       const { data } = await axiosInstance.post("/payment/create-order", {
         amount: Math.round(amount * 100),
@@ -137,7 +140,7 @@ const RazorpayButton = ({
 
   return (
     <button onClick={handlePayment} className={className}>
-      Pay Now
+      {button_text || "Pay Now"}
     </button>
   );
 };
